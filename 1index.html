@@ -1,0 +1,1407 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Certsigner — Plataforma global para registrar evidências de prioridade de ideias e criações com timestamp criptográfico, múltiplas fontes de validação e continuidade probatória.">
+    <title>Certsigner | Evidência de Prioridade para Ideias e Criações</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&amp;family=Space+Grotesk:wght@500;600&amp;display=swap');
+        
+        :root {
+            --primary: #1e40af;
+        }
+        
+        body {
+            font-family: 'Inter', system_ui, sans-serif;
+        }
+        
+        .heading-font {
+            font-family: 'Space Grotesk', 'Inter', sans-serif;
+            font-weight: 600;
+            letter-spacing: -0.025em;
+        }
+
+        .nav-active {
+            color: #1e40af;
+            font-weight: 600;
+        }
+
+        .section-header {
+            font-size: 2.25rem;
+            line-height: 1.1;
+            font-weight: 700;
+            letter-spacing: -0.04em;
+        }
+
+        .feature-card {
+            transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.2s;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+        }
+
+        .step {
+            transition: all 0.3s ease;
+        }
+
+        .pro-badge {
+            background: linear-gradient(90deg, #1e40af, #3b82f6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 700;
+        }
+
+        .trust-badge {
+            background-color: #f1f5f9;
+            color: #475569;
+        }
+
+        .diff-table th {
+            background-color: #f8fafc;
+            font-weight: 600;
+            color: #334155;
+        }
+
+        .nav-scrolled {
+            box-shadow: 0 1px 0 0 #e2e8f0;
+        }
+
+        .hash-demo {
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-900">
+    <!-- CONFIG BRANDING - Edite este objeto para alterar dinamicamente nome, slogan e textos principais -->
+    <script>
+        const CONFIG = {
+            brandName: "Certsigner",
+            domain: "certsigner.com",
+            tagline: "Evidência de Prioridade para Ideias e Criações",
+            heroSubtitle: "Registre em segundos a existência, integridade e data da sua criação. Escolha entre depósitos públicos, privados ou criptografados. Monitoramento contínuo da validade das provas.",
+            mission: "Democratizar o acesso a evidências probatórias confiáveis, permitindo que qualquer criador — independentemente de recursos financeiros, localização ou conhecimento jurídico — produza registros verificáveis e duradouros de suas ideias e criações.",
+            primaryColor: "#1e40af"
+        };
+
+        function applyBranding() {
+            // Title
+            document.title = `${CONFIG.brandName} | ${CONFIG.tagline}`;
+            
+            // Brand names
+            document.querySelectorAll('.brand-name').forEach(el => {
+                el.textContent = CONFIG.brandName;
+            });
+            
+            // Tagline
+            const taglineEl = document.getElementById('dynamic-tagline');
+            if (taglineEl) taglineEl.textContent = CONFIG.tagline;
+            
+            // Hero subtitle
+            const heroSub = document.getElementById('hero-subtitle');
+            if (heroSub) heroSub.textContent = CONFIG.heroSubtitle;
+            
+            // Mission
+            const missionEl = document.getElementById('mission-text');
+            if (missionEl) missionEl.textContent = CONFIG.mission;
+            
+            // Domain in footer
+            document.querySelectorAll('.brand-domain').forEach(el => {
+                el.textContent = CONFIG.domain;
+            });
+            
+            console.log('%c[Certsigner] Branding aplicado dinamicamente. Edite o objeto CONFIG no topo do HTML para personalizar.', 'color:#64748b');
+        }
+        
+        // Simple hash demo function (SHA-256 simulation for demo purposes)
+        async function generateDemoHash() {
+            const input = document.getElementById('demo-input').value.trim();
+            if (!input) {
+                alert('Digite ou cole sua ideia/texto para gerar o hash de demonstração.');
+                return;
+            }
+            
+            const btn = document.getElementById('demo-btn');
+            const resultBox = document.getElementById('demo-result');
+            const hashEl = document.getElementById('demo-hash');
+            const proofEl = document.getElementById('demo-proof');
+            
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Gerando prova...';
+
+            try {
+                // Simulate processing
+                await new Promise(r => setTimeout(r, 850));
+
+                // Real SHA-256 if available, else fallback
+                let hash = '';
+                try {
+                    const encoder = new TextEncoder();
+                    const data = encoder.encode(input);
+                    const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+                    const hashArray = Array.from(new Uint8Array(hashBuffer));
+                    hash = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+                } catch(e) {
+                    // Fallback simple hash (e.g. crypto.subtle unavailable on insecure/non-HTTPS origin)
+                    hash = Array.from(input).reduce((acc, char) => acc + char.charCodeAt(0), 0).toString(16).padStart(64, '0').slice(0,64);
+                }
+
+                const timestamp = new Date().toISOString().replace('T', ' ').slice(0,19) + ' UTC';
+                const shortHash = hash.substring(0, 16) + '...' + hash.substring(48);
+
+                hashEl.textContent = hash;
+                proofEl.innerHTML = `
+                    <div class="text-xs text-slate-500 mb-1">Comprovante gerado em ${timestamp}</div>
+                    <div class="font-mono text-[10px] bg-white p-2 rounded border border-slate-200 break-all">${shortHash}</div>
+                    <div class="mt-2 text-[10px] text-emerald-600 flex items-center gap-1">
+                        <i class="fas fa-check-circle"></i> 
+                        <span>Registrado em 7 fontes públicas • Válido por 10+ anos (estimado)</span>
+                    </div>
+                `;
+
+                resultBox.classList.remove('hidden');
+                resultBox.classList.add('animate-[fadeIn_0.4s_ease]');
+            } catch (err) {
+                console.error('[Certsigner] Falha ao gerar hash de demonstração:', err);
+                alert('Não foi possível gerar a prova de demonstração agora. Tente novamente.');
+            } finally {
+                // Always re-enable the button, even if something above threw
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-redo mr-2"></i> Gerar Nova Prova';
+            }
+        }
+        
+        function copyHash() {
+            const hash = document.getElementById('demo-hash').textContent;
+            navigator.clipboard.writeText(hash).then(() => {
+                const orig = event.currentTarget ? event.currentTarget.innerHTML : '';
+                const btns = document.querySelectorAll('.copy-hash-btn');
+                btns.forEach(b => {
+                    b.innerHTML = '<i class="fas fa-check"></i> Copiado!';
+                    setTimeout(() => {
+                        b.innerHTML = '<i class="fas fa-copy"></i> Copiar Hash';
+                    }, 1800);
+                });
+            }).catch(() => {
+                alert('Hash: ' + hash + '\n(Copie manualmente)');
+            });
+        }
+        
+        // Mobile menu
+        function initMobileMenu() {
+            const menuBtn = document.getElementById('mobile-menu-btn');
+            const mobileMenu = document.getElementById('mobile-menu');
+            
+            if (!menuBtn || !mobileMenu) return;
+            
+            menuBtn.addEventListener('click', () => {
+                mobileMenu.classList.toggle('hidden');
+                const icon = menuBtn.querySelector('i');
+                if (icon) {
+                    icon.classList.toggle('fa-bars');
+                    icon.classList.toggle('fa-times');
+                }
+            });
+            
+            // Close on link click
+            mobileMenu.querySelectorAll('a').forEach(link => {
+                link.addEventListener('click', () => {
+                    mobileMenu.classList.add('hidden');
+                    const icon = menuBtn.querySelector('i');
+                    if (icon) {
+                        icon.classList.add('fa-bars');
+                        icon.classList.remove('fa-times');
+                    }
+                });
+            });
+        }
+        
+        // Navbar scroll effect
+        function initNavbar() {
+            const nav = document.getElementById('main-nav');
+            if (!nav) return;
+            
+            window.addEventListener('scroll', () => {
+                if (window.scrollY > 20) {
+                    nav.classList.add('nav-scrolled', 'bg-white/95', 'backdrop-blur-lg');
+                } else {
+                    nav.classList.remove('nav-scrolled', 'bg-white/95', 'backdrop-blur-lg');
+                }
+            });
+        }
+        
+        // Smooth scroll for nav links
+        function initSmoothScroll() {
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function(e) {
+                    const target = document.querySelector(this.getAttribute('href'));
+                    if (target) {
+                        e.preventDefault();
+                        const offset = 80;
+                        const bodyRect = document.body.getBoundingClientRect().top;
+                        const elementPosition = target.getBoundingClientRect().top;
+                        const offsetPosition = elementPosition - bodyRect - offset;
+                        
+                        window.scrollTo({
+                            top: offsetPosition,
+                            behavior: 'smooth'
+                        });
+                    }
+                });
+            });
+        }
+        
+        // Initialize everything
+        // ==================== MULTILINGUAL SUPPORT ====================
+        const translations = {
+            pt: {
+                "nav.test": "Testar Agora",
+                "nav.start": "Começar Grátis",
+                "hero.title": "Prove que sua ideia existia primeiro.",
+                "hero.subtitle": "Registre em segundos a existência, integridade e data da sua criação. Escolha entre depósitos públicos, privados ou criptografados. Monitoramento contínuo da validade das provas.",
+                "mission.text": "Democratizar o acesso a evidências probatórias confiáveis, permitindo que qualquer criador — independentemente de recursos financeiros, localização ou conhecimento jurídico — produza registros verificáveis e duradouros de suas ideias e criações.",
+                "how.title": "Como o Certsigner funciona",
+                "how.step1.title": "Envie seu conteúdo",
+                "how.step1.desc": "Texto, arquivo, imagem, código ou qualquer criação. O sistema gera automaticamente o hash criptográfico (SHA-256) único.",
+                "how.step2.title": "Escolha o tipo de depósito",
+                "how.step2.desc": "Público (visível), Privado (apenas você) ou Criptografado (aberto apenas com sua chave). Você controla a exposição.",
+                "how.step3.title": "Publicação multi-fonte",
+                "how.step3.desc": "O hash é registrado simultaneamente em múltiplas fontes públicas reconhecidas (blockchain, repositórios, bases de patentes, etc.) gerando redundância e prova social.",
+                "how.step4.title": "Receba seu comprovante",
+                "how.step4.desc": "Certificado digital + links de verificação + histórico de versões. Monitoramento contínuo da disponibilidade das fontes.",
+                "diff.title": "Oito diferenciais estratégicos",
+                "security.title": "Não basta criar a prova. É preciso mantê-la válida.",
+                "cta.test": "Testar o Gerador Agora",
+                "cta.access": "Solicitar Early Access",
+                "diff.concept": "Conceito",
+                "diff.application": "Aplicação no Certsigner",
+                "diff.differential": "Diferencial",
+                "diff.liberdade": "Liberdade",
+                "diff.facilidade": "Facilidade",
+                "diff.agilidade": "Agilidade",
+                "diff.valorizacao": "Valorização da Criação",
+                "diff.globalidade": "Globalidade",
+                "diff.versatilidade": "Versatilidade",
+                "diff.seguranca": "Segurança",
+                "diff.continuidade": "Continuidade Probatória",
+                "security.subtitle": "SEGURANÇA & CONTINUIDADE",
+                "security.main": "Não basta criar a prova. É preciso mantê-la válida.",
+                "security.desc": "A maioria dos serviços de timestamp ou blockchain entrega um certificado e transfere ao usuário toda a responsabilidade de guardar, verificar e migrar a evidência quando tecnologias mudam.",
+                "comparison.title": "Por que as alternativas tradicionais deixam lacunas?",
+                "comparison.patents": "Patentes",
+                "comparison.copyright": "Direitos Autorais",
+                "comparison.cloud": "Armazenamento em Nuvem",
+                "comparison.email": "E-mail para si mesmo",
+                "comparison.timestamp": "Timestamp Isolado",
+                "comparison.blockchain": "Blockchain Isolado",
+                "comparison.patents.desc": "Exigem requisitos legais rigorosos, tramitação longa, custos elevados e proteção territorial. Não protegem ideias abstratas ou versões preliminares.",
+                "comparison.copyright.desc": "Protegem a expressão, não a ideia. O registro não é obrigatório, mas provar data, autoria e integridade em conflitos pode ser difícil sem evidências independentes.",
+                "comparison.cloud.desc": "Mostra que o arquivo existia na conta, mas não oferece prova independente de integridade, marca temporal qualificada ou validação por terceiros confiáveis.",
+                "comparison.email.desc": "Pode ser questionado quanto a autenticidade, integridade do anexo, controle da conta e força probatória isolada.",
+                "comparison.timestamp.desc": "Demonstra existência em um momento, mas geralmente não oferece armazenamento seguro, gerenciamento de versões, confidencialidade configurável e múltiplas fontes.",
+                "comparison.blockchain.desc": "Registra o hash, mas não resolve identidade do autor, titularidade jurídica, preservação do arquivo original, confidencialidade e compreensão do comprovante pelo usuário comum.",
+                "comparison.contribution": "A contribuição do certsigner:",
+                "comparison.contribution.desc": "Oferecemos uma camada inicial de documentação acessível e verificável que complementa (e não substitui) patentes, direitos autorais e outros mecanismos formais. Reduz a janela de vulnerabilidade entre a criação e a proteção formal.",
+                "nav.concept": "Conceito",
+                "nav.how": "Como Funciona",
+                "nav.differentials": "Diferenciais",
+                "nav.security": "Segurança",
+                "nav.comparison": "Comparação",
+                "nav.mobile.test": "Testar",
+                "nav.mobile.start": "Começar",
+                "hero.eyebrow": "PLATAFORMA GLOBAL DE PRIORIDADE PROBATÓRIA",
+                "hero.cta.demo": "Testar o Gerador de Prova",
+                "hero.cta.concept": "Entender o Conceito",
+                "hero.stat.global": "Global",
+                "hero.stat.verifiable": "Verificável",
+                "hero.stat.immutable": "Imutável no tempo",
+                "concept.eyebrow": "O CONCEITO CENTRAL",
+                "concept.heading": "Uma certificadora de prioridade de ideias acessível a todos.",
+                "concept.badge1": "Complementa patentes e direitos autorais",
+                "concept.badge2": "Fontes internacionais de validação",
+                "concept.principle.eyebrow": "PRINCÍPIO FUNDAMENTAL",
+                "concept.principle.quote": "“Toda criação deve poder ser documentada imediata e globalmente, independentemente da condição econômica, da localização geográfica ou do conhecimento jurídico de seu criador.”",
+                "concept.principle.source": "— Resumo do Projeto Certsigner",
+                "how.eyebrow": "PROCESSO EM 4 ETAPAS",
+                "how.subtitle": "Do conteúdo à evidência verificável em minutos. Sem burocracia, sem taxas elevadas.",
+                "demo.eyebrow": "DEMONSTRAÇÃO INTERATIVA",
+                "demo.heading": "Teste o gerador de prova de prioridade",
+                "demo.subtext": "Sem cadastro • Resultado instantâneo • Apenas demonstração",
+                "demo.placeholder": "Cole aqui sua ideia, descrição de invenção, texto de obra, código ou qualquer conteúdo...",
+                "demo.button": "Gerar Prova de Prioridade",
+                "demo.disclaimer": "Este é um demonstrativo. O hash real é registrado em múltiplas fontes independentes para máxima resiliência probatória.",
+                "demo.result.title": "Prova Gerada com Sucesso",
+                "demo.result.copy": "Copiar Hash",
+                "demo.result.hashlabel": "Hash SHA-256 do conteúdo:",
+                "diff.eyebrow": "POR QUE CERTSIGNER É DIFERENTE",
+                "diff.liberdade.app": "Depósito público, privado ou criptografado",
+                "diff.liberdade.effect": "O criador controla totalmente a exposição do conteúdo",
+                "diff.facilidade.app": "Procedimento simples e compreensível",
+                "diff.facilidade.effect": "Redução drástica de barreiras técnicas e burocráticas",
+                "diff.agilidade.app": "Registro e comprovante em minutos",
+                "diff.agilidade.effect": "Menor intervalo entre criação e evidência probatória",
+                "diff.valorizacao.app": "Registra ideias, rascunhos, etapas e versões",
+                "diff.valorizacao.effect": "Proteção documental do processo criativo completo",
+                "diff.globalidade.app": "Evidências verificáveis por fontes internacionais",
+                "diff.globalidade.effect": "Menor dependência de uma única jurisdição ou autoridade",
+                "diff.versatilidade.app": "Diferentes arquivos, conteúdos e níveis de sigilo",
+                "diff.versatilidade.effect": "Uma única infraestrutura para múltiplos tipos de criação",
+                "diff.seguranca.app": "Criptografia + redundância + controle de integridade",
+                "diff.seguranca.effect": "Redução do risco de perda ou adulteração ao longo do tempo",
+                "diff.continuidade.app": "Monitoramento ativo + alertas preventivos",
+                "diff.continuidade.effect": "Preservação ativa da verificabilidade futura — diferencial único",
+                "diff.footnote": "A continuidade probatória é o grande diferencial: não apenas geramos a prova, mas monitoramos sua validade ao longo dos anos.",
+                "security.bullet1": "Múltiplas fontes de validação com reconhecimento público (blockchain, repositórios acadêmicos, bases de patentes, etc.)",
+                "security.bullet2": "Monitoramento contínuo da disponibilidade e validade das fontes",
+                "security.bullet3": "Alertas preventivos antes que todas as fontes se tornem indisponíveis",
+                "security.bullet4": "Recomendações automáticas de renovação, migração ou atualização criptográfica",
+                "security.panel.eyebrow": "RECURSO EXCLUSIVO",
+                "security.panel.title": "Continuidade Probatória Ativa",
+                "security.panel.desc": "Antes que todas as fontes associadas a um depósito se tornem indisponíveis, o sistema informa o usuário e recomenda ações concretas para preservar a força probatória da evidência.",
+                "security.panel.footer": "Redundância • Migração • Renovação • Auditoria",
+                "comparison.eyebrow": "LIMITAÇÕES DAS OPÇÕES ATUAIS",
+                "sources.eyebrow": "FONTES DE VALIDAÇÃO MULTIPLAS",
+                "sources.heading": "Redundância é segurança",
+                "sources.desc": "O hash do seu conteúdo é ancorado em diversas fontes públicas reconhecidas internacionalmente, reduzindo drasticamente o risco de perda de verificabilidade.",
+                "sources.other": "Outras bases IP globais",
+                "sources.footnote": "A lista exata de fontes é atualizada continuamente para maximizar resiliência e reconhecimento jurídico.",
+                "positioning.badge": "POSICIONAMENTO",
+                "positioning.heading": "Uma plataforma global, acessível e segura para registrar, preservar e recuperar evidências de ideias e criações desde o primeiro momento.",
+                "positioning.desc": "O Certsigner permite que qualquer pessoa documente sua criação de maneira rápida, com liberdade para manter o conteúdo público, privado ou criptografado — protegendo não apenas o arquivo, mas a capacidade futura de demonstrar sua existência, integridade e evolução.",
+                "cta.eyebrow": "PRONTO PARA PROTEGER SUAS IDEIAS?",
+                "cta.heading": "Comece a documentar suas criações hoje.",
+                "cta.footer": "Sem cartão de crédito • Versão gratuita disponível • App completo em desenvolvimento",
+                "footer.rights": "Todos os direitos reservados.",
+                "footer.tagline": "Uma ferramenta de documentação probatória complementar a patentes, direitos autorais e outros registros formais.",
+                "footer.terms": "Termos",
+                "footer.privacy": "Privacidade",
+                "footer.continuity": "Continuidade Probatória",
+                "footer.sources": "Fontes de Validação"
+            },
+            en: {
+                "nav.test": "Try Now",
+                "nav.start": "Get Started Free",
+                "hero.title": "Prove your idea existed first.",
+                "hero.subtitle": "Register the existence, integrity and date of your creation in seconds. Choose between public, private or encrypted deposits. Continuous monitoring of proof validity.",
+                "mission.text": "Democratize access to reliable evidentiary records, allowing any creator — regardless of financial resources, location or legal knowledge — to produce verifiable and lasting records of their ideas and creations.",
+                "how.title": "How Certsigner Works",
+                "how.step1.title": "Submit your content",
+                "how.step1.desc": "Text, file, image, code or any creation. The system automatically generates a unique cryptographic hash (SHA-256).",
+                "how.step2.title": "Choose deposit type",
+                "how.step2.desc": "Public (visible), Private (only you) or Encrypted (only accessible with your key). You control the exposure.",
+                "how.step3.title": "Multi-source publication",
+                "how.step3.desc": "The hash is simultaneously registered across multiple recognized public sources (blockchain, repositories, patent databases, etc.) generating redundancy and social proof.",
+                "how.step4.title": "Receive your certificate",
+                "how.step4.desc": "Digital certificate + verification links + version history. Continuous monitoring of source availability.",
+                "diff.title": "Eight Strategic Differentials",
+                "security.title": "It's not enough to create the proof. It must remain valid over time.",
+                "cta.test": "Try the Generator Now",
+                "cta.access": "Request Early Access",
+                "comparison.patents.desc": "Require strict legal requirements, lengthy processing, high costs and territorial protection. They do not protect abstract ideas or preliminary versions.",
+                "comparison.copyright.desc": "They protect expression, not the idea. Registration is not mandatory, but proving date, authorship and integrity in conflicts can be difficult without independent evidence.",
+                "comparison.cloud.desc": "Shows that the file existed in the account, but does not offer independent proof of integrity, qualified timestamp or validation by reliable third parties.",
+                "comparison.email.desc": "It can be questioned regarding authenticity, attachment integrity, account control and isolated probative force.",
+                "comparison.timestamp.desc": "Demonstrates existence at a moment, but generally does not offer secure storage, version management, configurable confidentiality and multiple sources.",
+                "comparison.blockchain.desc": "Records the hash, but does not resolve author identity, legal ownership, preservation of the original file, confidentiality and understanding of the proof by the common user.",
+                "comparison.contribution": "certsigner's contribution:",
+                "comparison.contribution.desc": "We offer an initial layer of accessible and verifiable documentation that complements (and does not replace) patents, copyrights and other formal mechanisms. It reduces the vulnerability window between creation and formal protection.",
+                "diff.concept": "Concept",
+                "diff.application": "Application in Certsigner",
+                "diff.differential": "Differential",
+                "diff.liberdade": "Freedom",
+                "diff.facilidade": "Ease of Use",
+                "diff.agilidade": "Agility",
+                "diff.valorizacao": "Valuation of Creation",
+                "diff.globalidade": "Global Reach",
+                "diff.versatilidade": "Versatility",
+                "diff.seguranca": "Security",
+                "diff.continuidade": "Evidentiary Continuity",
+                "security.subtitle": "SECURITY & CONTINUITY",
+                "security.main": "It's not enough to create the proof. It must remain valid over time.",
+                "security.desc": "Most timestamp or blockchain services deliver a certificate and shift onto the user the entire responsibility of storing, verifying and migrating the evidence as technologies change.",
+                "comparison.title": "Why do traditional alternatives leave gaps?",
+                "comparison.patents": "Patents",
+                "comparison.copyright": "Copyright",
+                "comparison.cloud": "Cloud Storage",
+                "comparison.email": "Email to Yourself",
+                "comparison.timestamp": "Isolated Timestamp",
+                "comparison.blockchain": "Isolated Blockchain",
+                "nav.concept": "Concept",
+                "nav.how": "How It Works",
+                "nav.differentials": "Differentials",
+                "nav.security": "Security",
+                "nav.comparison": "Comparison",
+                "nav.mobile.test": "Try",
+                "nav.mobile.start": "Start",
+                "hero.eyebrow": "GLOBAL PLATFORM FOR EVIDENTIARY PRIORITY",
+                "hero.cta.demo": "Try the Proof Generator",
+                "hero.cta.concept": "Understand the Concept",
+                "hero.stat.global": "Global",
+                "hero.stat.verifiable": "Verifiable",
+                "hero.stat.immutable": "Immutable Over Time",
+                "concept.eyebrow": "THE CORE CONCEPT",
+                "concept.heading": "An idea priority certification service accessible to everyone.",
+                "concept.badge1": "Complements patents and copyrights",
+                "concept.badge2": "International validation sources",
+                "concept.principle.eyebrow": "FUNDAMENTAL PRINCIPLE",
+                "concept.principle.quote": "“Every creation should be documentable immediately and globally, regardless of the creator's financial situation, geographic location or legal knowledge.”",
+                "concept.principle.source": "— Certsigner Project Summary",
+                "how.eyebrow": "4-STEP PROCESS",
+                "how.subtitle": "From content to verifiable evidence in minutes. No bureaucracy, no high fees.",
+                "demo.eyebrow": "INTERACTIVE DEMO",
+                "demo.heading": "Test the priority proof generator",
+                "demo.subtext": "No signup • Instant result • Demonstration only",
+                "demo.placeholder": "Paste your idea, invention description, work text, code or any content here...",
+                "demo.button": "Generate Priority Proof",
+                "demo.disclaimer": "This is a demonstration. The real hash is registered across multiple independent sources for maximum evidentiary resilience.",
+                "demo.result.title": "Proof Generated Successfully",
+                "demo.result.copy": "Copy Hash",
+                "demo.result.hashlabel": "SHA-256 hash of the content:",
+                "diff.eyebrow": "WHY CERTSIGNER IS DIFFERENT",
+                "diff.liberdade.app": "Public, private or encrypted deposit",
+                "diff.liberdade.effect": "The creator fully controls content exposure",
+                "diff.facilidade.app": "Simple, understandable procedure",
+                "diff.facilidade.effect": "Drastic reduction of technical and bureaucratic barriers",
+                "diff.agilidade.app": "Registration and proof in minutes",
+                "diff.agilidade.effect": "Shorter interval between creation and evidentiary proof",
+                "diff.valorizacao.app": "Records ideas, drafts, stages and versions",
+                "diff.valorizacao.effect": "Documentary protection of the entire creative process",
+                "diff.globalidade.app": "Verifiable evidence from international sources",
+                "diff.globalidade.effect": "Less dependence on a single jurisdiction or authority",
+                "diff.versatilidade.app": "Different files, content and confidentiality levels",
+                "diff.versatilidade.effect": "A single infrastructure for multiple types of creation",
+                "diff.seguranca.app": "Encryption + redundancy + integrity control",
+                "diff.seguranca.effect": "Reduced risk of loss or tampering over time",
+                "diff.continuidade.app": "Active monitoring + preventive alerts",
+                "diff.continuidade.effect": "Active preservation of future verifiability — a unique differentiator",
+                "diff.footnote": "Evidentiary continuity is the biggest differentiator: we don't just generate the proof, we monitor its validity for years to come.",
+                "security.bullet1": "Multiple validation sources with public recognition (blockchain, academic repositories, patent databases, etc.)",
+                "security.bullet2": "Continuous monitoring of source availability and validity",
+                "security.bullet3": "Preventive alerts before all sources become unavailable",
+                "security.bullet4": "Automatic recommendations for renewal, migration or cryptographic upgrade",
+                "security.panel.eyebrow": "EXCLUSIVE FEATURE",
+                "security.panel.title": "Active Evidentiary Continuity",
+                "security.panel.desc": "Before all sources associated with a deposit become unavailable, the system notifies the user and recommends concrete actions to preserve the evidentiary strength of the proof.",
+                "security.panel.footer": "Redundancy • Migration • Renewal • Audit",
+                "comparison.eyebrow": "LIMITATIONS OF CURRENT OPTIONS",
+                "sources.eyebrow": "MULTIPLE VALIDATION SOURCES",
+                "sources.heading": "Redundancy is security",
+                "sources.desc": "The hash of your content is anchored across several internationally recognized public sources, drastically reducing the risk of losing verifiability.",
+                "sources.other": "Other global IP databases",
+                "sources.footnote": "The exact list of sources is continuously updated to maximize resilience and legal recognition.",
+                "positioning.badge": "POSITIONING",
+                "positioning.heading": "A global, accessible and secure platform to register, preserve and retrieve evidence of ideas and creations from the very first moment.",
+                "positioning.desc": "Certsigner lets anyone document their creation quickly, with the freedom to keep content public, private or encrypted — protecting not just the file, but the future ability to demonstrate its existence, integrity and evolution.",
+                "cta.eyebrow": "READY TO PROTECT YOUR IDEAS?",
+                "cta.heading": "Start documenting your creations today.",
+                "cta.footer": "No credit card • Free version available • Full app in development",
+                "footer.rights": "All rights reserved.",
+                "footer.tagline": "An evidentiary documentation tool complementary to patents, copyrights and other formal registrations.",
+                "footer.terms": "Terms",
+                "footer.privacy": "Privacy",
+                "footer.continuity": "Evidentiary Continuity",
+                "footer.sources": "Validation Sources"
+            },
+            es: {
+                "nav.test": "Probar Ahora",
+                "nav.start": "Comenzar Gratis",
+                "hero.title": "Demuestra que tu idea existió primero.",
+                "hero.subtitle": "Registra en segundos la existencia, integridad y fecha de tu creación. Elige entre depósitos públicos, privados o encriptados. Monitoreo continuo de la validez de las pruebas.",
+                "mission.text": "Democratizar el acceso a registros probatorios confiables, permitiendo que cualquier creador — independientemente de recursos financieros, ubicación o conocimiento jurídico — produzca registros verificables y duraderos de sus ideas y creaciones.",
+                "how.title": "Cómo funciona Certsigner",
+                "how.step1.title": "Envía tu contenido",
+                "how.step1.desc": "Texto, archivo, imagen, código o cualquier creación. El sistema genera automáticamente el hash criptográfico único (SHA-256).",
+                "how.step2.title": "Elige el tipo de depósito",
+                "how.step2.desc": "Público (visible), Privado (solo tú) o Encriptado (accesible solo con tu clave). Tú controlas la exposición.",
+                "how.step3.title": "Publicación multi-fuente",
+                "how.step3.desc": "El hash se registra simultáneamente en múltiples fuentes públicas reconocidas (blockchain, repositorios, bases de patentes, etc.) generando redundancia y prueba social.",
+                "how.step4.title": "Recibe tu certificado",
+                "how.step4.desc": "Certificado digital + enlaces de verificación + historial de versiones. Monitoreo continuo de la disponibilidad de las fuentes.",
+                "diff.title": "Ocho Diferenciales Estratégicos",
+                "security.title": "No basta crear la prueba. Debe mantenerse válida con el tiempo.",
+                "cta.test": "Probar el Generador Ahora",
+                "cta.access": "Solicitar Acceso Anticipado",
+                "diff.concept": "Concepto",
+                "diff.application": "Aplicación en Certsigner",
+                "diff.differential": "Diferencial",
+                "diff.liberdade": "Libertad",
+                "diff.facilidade": "Facilidad",
+                "diff.agilidade": "Agilidad",
+                "diff.valorizacao": "Valorización de la Creación",
+                "diff.globalidade": "Globalidad",
+                "diff.versatilidade": "Versatilidad",
+                "diff.seguranca": "Seguridad",
+                "diff.continuidade": "Continuidad Probatoria",
+                "security.subtitle": "SEGURIDAD Y CONTINUIDAD",
+                "security.main": "No basta con crear la prueba. Hay que mantenerla válida.",
+                "security.desc": "La mayoría de los servicios de timestamp o blockchain entregan un certificado y transfieren al usuario toda la responsabilidad de guardar, verificar y migrar la evidencia cuando las tecnologías cambian.",
+                "comparison.title": "¿Por qué las alternativas tradicionales dejan lagunas?",
+                "comparison.patents": "Patentes",
+                "comparison.copyright": "Derechos de Autor",
+                "comparison.cloud": "Almacenamiento en la Nube",
+                "comparison.email": "Correo electrónico a uno mismo",
+                "comparison.timestamp": "Timestamp Aislado",
+                "comparison.blockchain": "Blockchain Aislado",
+                "comparison.patents.desc": "Exigen requisitos legales rigurosos, trámites largos, costos elevados y protección territorial. No protegen ideas abstractas ni versiones preliminares.",
+                "comparison.copyright.desc": "Protegen la expresión, no la idea. El registro no es obligatorio, pero probar fecha, autoría e integridad en conflictos puede ser difícil sin evidencia independiente.",
+                "comparison.cloud.desc": "Muestra que el archivo existía en la cuenta, pero no ofrece prueba independiente de integridad, marca temporal calificada ni validación por terceros confiables.",
+                "comparison.email.desc": "Puede ser cuestionado en cuanto a autenticidad, integridad del adjunto, control de la cuenta y fuerza probatoria aislada.",
+                "comparison.timestamp.desc": "Demuestra existencia en un momento dado, pero generalmente no ofrece almacenamiento seguro, gestión de versiones, confidencialidad configurable ni múltiples fuentes.",
+                "comparison.blockchain.desc": "Registra el hash, pero no resuelve la identidad del autor, la titularidad jurídica, la preservación del archivo original, la confidencialidad ni la comprensión del comprobante por el usuario común.",
+                "comparison.contribution": "La contribución de Certsigner:",
+                "comparison.contribution.desc": "Ofrecemos una capa inicial de documentación accesible y verificable que complementa (y no sustituye) patentes, derechos de autor y otros mecanismos formales. Reduce la ventana de vulnerabilidad entre la creación y la protección formal.",
+                "nav.concept": "Concepto",
+                "nav.how": "Cómo Funciona",
+                "nav.differentials": "Diferenciales",
+                "nav.security": "Seguridad",
+                "nav.comparison": "Comparación",
+                "nav.mobile.test": "Probar",
+                "nav.mobile.start": "Comenzar",
+                "hero.eyebrow": "PLATAFORMA GLOBAL DE PRIORIDAD PROBATORIA",
+                "hero.cta.demo": "Probar el Generador de Prueba",
+                "hero.cta.concept": "Entender el Concepto",
+                "hero.stat.global": "Global",
+                "hero.stat.verifiable": "Verificable",
+                "hero.stat.immutable": "Inmutable en el Tiempo",
+                "concept.eyebrow": "EL CONCEPTO CENTRAL",
+                "concept.heading": "Una certificadora de prioridad de ideas accesible para todos.",
+                "concept.badge1": "Complementa patentes y derechos de autor",
+                "concept.badge2": "Fuentes internacionales de validación",
+                "concept.principle.eyebrow": "PRINCIPIO FUNDAMENTAL",
+                "concept.principle.quote": "“Toda creación debe poder documentarse de forma inmediata y global, independientemente de la condición económica, la ubicación geográfica o el conocimiento jurídico de su creador.”",
+                "concept.principle.source": "— Resumen del Proyecto Certsigner",
+                "how.eyebrow": "PROCESO EN 4 ETAPAS",
+                "how.subtitle": "Del contenido a la evidencia verificable en minutos. Sin burocracia, sin tarifas elevadas.",
+                "demo.eyebrow": "DEMOSTRACIÓN INTERACTIVA",
+                "demo.heading": "Prueba el generador de prueba de prioridad",
+                "demo.subtext": "Sin registro • Resultado instantáneo • Solo demostración",
+                "demo.placeholder": "Pega aquí tu idea, descripción de invención, texto de obra, código o cualquier contenido...",
+                "demo.button": "Generar Prueba de Prioridad",
+                "demo.disclaimer": "Esto es una demostración. El hash real se registra en múltiples fuentes independientes para máxima resiliencia probatoria.",
+                "demo.result.title": "Prueba Generada con Éxito",
+                "demo.result.copy": "Copiar Hash",
+                "demo.result.hashlabel": "Hash SHA-256 del contenido:",
+                "diff.eyebrow": "POR QUÉ CERTSIGNER ES DIFERENTE",
+                "diff.liberdade.app": "Depósito público, privado o encriptado",
+                "diff.liberdade.effect": "El creador controla totalmente la exposición del contenido",
+                "diff.facilidade.app": "Procedimiento simple y comprensible",
+                "diff.facilidade.effect": "Reducción drástica de barreras técnicas y burocráticas",
+                "diff.agilidade.app": "Registro y comprobante en minutos",
+                "diff.agilidade.effect": "Menor intervalo entre creación y evidencia probatoria",
+                "diff.valorizacao.app": "Registra ideas, borradores, etapas y versiones",
+                "diff.valorizacao.effect": "Protección documental de todo el proceso creativo",
+                "diff.globalidade.app": "Evidencias verificables por fuentes internacionales",
+                "diff.globalidade.effect": "Menor dependencia de una única jurisdicción o autoridad",
+                "diff.versatilidade.app": "Diferentes archivos, contenidos y niveles de confidencialidad",
+                "diff.versatilidade.effect": "Una única infraestructura para múltiples tipos de creación",
+                "diff.seguranca.app": "Encriptación + redundancia + control de integridad",
+                "diff.seguranca.effect": "Reducción del riesgo de pérdida o alteración con el tiempo",
+                "diff.continuidade.app": "Monitoreo activo + alertas preventivas",
+                "diff.continuidade.effect": "Preservación activa de la verificabilidad futura — diferencial único",
+                "diff.footnote": "La continuidad probatoria es la gran diferencia: no solo generamos la prueba, sino que monitoreamos su validez a lo largo de los años.",
+                "security.bullet1": "Múltiples fuentes de validación con reconocimiento público (blockchain, repositorios académicos, bases de patentes, etc.)",
+                "security.bullet2": "Monitoreo continuo de la disponibilidad y validez de las fuentes",
+                "security.bullet3": "Alertas preventivas antes de que todas las fuentes queden indisponibles",
+                "security.bullet4": "Recomendaciones automáticas de renovación, migración o actualización criptográfica",
+                "security.panel.eyebrow": "FUNCIÓN EXCLUSIVA",
+                "security.panel.title": "Continuidad Probatoria Activa",
+                "security.panel.desc": "Antes de que todas las fuentes asociadas a un depósito queden indisponibles, el sistema informa al usuario y recomienda acciones concretas para preservar la fuerza probatoria de la evidencia.",
+                "security.panel.footer": "Redundancia • Migración • Renovación • Auditoría",
+                "comparison.eyebrow": "LIMITACIONES DE LAS OPCIONES ACTUALES",
+                "sources.eyebrow": "MÚLTIPLES FUENTES DE VALIDACIÓN",
+                "sources.heading": "La redundancia es seguridad",
+                "sources.desc": "El hash de tu contenido se ancla en diversas fuentes públicas reconocidas internacionalmente, reduciendo drásticamente el riesgo de perder la verificabilidad.",
+                "sources.other": "Otras bases de PI globales",
+                "sources.footnote": "La lista exacta de fuentes se actualiza continuamente para maximizar la resiliencia y el reconocimiento jurídico.",
+                "positioning.badge": "POSICIONAMIENTO",
+                "positioning.heading": "Una plataforma global, accesible y segura para registrar, preservar y recuperar evidencias de ideas y creaciones desde el primer momento.",
+                "positioning.desc": "Certsigner permite que cualquier persona documente su creación de forma rápida, con libertad para mantener el contenido público, privado o encriptado — protegiendo no solo el archivo, sino la capacidad futura de demostrar su existencia, integridad y evolución.",
+                "cta.eyebrow": "¿LISTO PARA PROTEGER TUS IDEAS?",
+                "cta.heading": "Empieza a documentar tus creaciones hoy.",
+                "cta.footer": "Sin tarjeta de crédito • Versión gratuita disponible • App completa en desarrollo",
+                "footer.rights": "Todos los derechos reservados.",
+                "footer.tagline": "Una herramienta de documentación probatoria complementaria a patentes, derechos de autor y otros registros formales.",
+                "footer.terms": "Términos",
+                "footer.privacy": "Privacidad",
+                "footer.continuity": "Continuidad Probatoria",
+                "footer.sources": "Fuentes de Validación"
+            },
+            zh: {
+                "comparison.patents.desc": "需要严格的法律要求、冗长的流程、高昂的成本和地域保护。它们不保护抽象想法或初步版本。",
+                "comparison.copyright.desc": "它们保护表达而非想法。注册不是强制性的，但在冲突中证明日期、作者身份和完整性可能很困难，没有独立证据。",
+                "comparison.cloud.desc": "显示文件存在于账户中，但不提供独立完整性证明、合格时间戳或可靠第三方的验证。",
+                "comparison.email.desc": "在真实性、附件完整性、账户控制和孤立的证明力方面可能会受到质疑。",
+                "comparison.timestamp.desc": "证明某一时刻的存在，但通常不提供安全存储、版本管理、可配置的保密性和多源支持。",
+                "comparison.blockchain.desc": "记录哈希，但不能解决作者身份、法律所有权、原始文件保存、保密性以及普通用户对证明的理解。",
+                "comparison.contribution": "certsigner 的贡献：",
+                "comparison.contribution.desc": "我们提供了一个可访问且可验证的初始文档层，补充（而非取代）专利、著作权和其他正式机制。它减少了创作与正式保护之间的脆弱窗口。",
+                "nav.test": "立即试用",
+                "nav.start": "免费开始",
+                "hero.title": "证明您的想法首先存在。",
+                "hero.subtitle": "在几秒钟内注册您创作的存在、完整性和日期。选择公开、私有或加密存储。持续监控证明的有效性。",
+                "mission.text": "民主化获取可靠证据记录的渠道，让任何创作者——无论财务资源、地理位置或法律知识如何——都能为其想法和创作生成可验证且持久的记录。",
+                "how.title": "Certsigner 如何运作",
+                "how.step1.title": "提交您的内容",
+                "how.step1.desc": "文本、文件、图像、代码或任何创作。系统自动生成唯一的加密哈希（SHA-256）。",
+                "how.step2.title": "选择存储类型",
+                "how.step2.desc": "公开（可见）、私有（仅您可见）或加密（仅用您的密钥可访问）。您控制曝光程度。",
+                "how.step3.title": "多源发布",
+                "how.step3.desc": "哈希同时在多个公认的公共来源（区块链、存储库、专利数据库等）中注册，生成冗余和社会证明。",
+                "how.step4.title": "接收您的证书",
+                "how.step4.desc": "数字证书 + 验证链接 + 版本历史。持续监控来源可用性。",
+                "diff.title": "八大战略差异",
+                "security.title": "仅仅创建证明是不够的。它必须长期保持有效。",
+                "cta.test": "立即尝试生成器",
+                "cta.access": "申请抢先体验",
+                "diff.concept": "概念",
+                "diff.application": "Certsigner 中的应用",
+                "diff.differential": "差异",
+                "diff.liberdade": "自由",
+                "diff.facilidade": "易用性",
+                "diff.agilidade": "敏捷性",
+                "diff.valorizacao": "创作价值",
+                "diff.globalidade": "全球性",
+                "diff.versatilidade": "多功能性",
+                "diff.seguranca": "安全性",
+                "diff.continuidade": "证据连续性",
+                "security.subtitle": "安全与连续性",
+                "security.main": "仅仅创建证明是不够的。它必须长期保持有效。",
+                "security.desc": "大多数时间戳或区块链服务只提供证书，并将保存、验证和迁移证据的责任完全转移给用户。",
+                "comparison.title": "为什么传统方案存在漏洞？",
+                "comparison.patents": "专利",
+                "comparison.copyright": "著作权",
+                "comparison.cloud": "云存储",
+                "comparison.email": "给自己发邮件",
+                "comparison.timestamp": "独立时间戳",
+                "comparison.blockchain": "独立区块链",
+                "nav.concept": "概念",
+                "nav.how": "工作原理",
+                "nav.differentials": "差异化优势",
+                "nav.security": "安全性",
+                "nav.comparison": "对比",
+                "nav.mobile.test": "试用",
+                "nav.mobile.start": "开始",
+                "hero.eyebrow": "全球证据优先权平台",
+                "hero.cta.demo": "试用证明生成器",
+                "hero.cta.concept": "了解概念",
+                "hero.stat.global": "全球化",
+                "hero.stat.verifiable": "可验证",
+                "hero.stat.immutable": "长期不可篡改",
+                "concept.eyebrow": "核心概念",
+                "concept.heading": "人人可及的创意优先权认证服务。",
+                "concept.badge1": "补充专利和著作权",
+                "concept.badge2": "国际验证来源",
+                "concept.principle.eyebrow": "基本原则",
+                "concept.principle.quote": "“每一项创作都应能够立即、全球性地被记录，无论创作者的经济状况、地理位置或法律知识如何。”",
+                "concept.principle.source": "— Certsigner 项目摘要",
+                "how.eyebrow": "四步流程",
+                "how.subtitle": "从内容到可验证证据，只需几分钟。无繁琐手续，无高额费用。",
+                "demo.eyebrow": "互动演示",
+                "demo.heading": "测试优先权证明生成器",
+                "demo.subtext": "无需注册 • 即时结果 • 仅供演示",
+                "demo.placeholder": "在此粘贴您的想法、发明描述、作品文本、代码或任何内容……",
+                "demo.button": "生成优先权证明",
+                "demo.disclaimer": "这是一个演示。真实的哈希值会同时注册在多个独立来源，以获得最大的证据韧性。",
+                "demo.result.title": "证明生成成功",
+                "demo.result.copy": "复制哈希值",
+                "demo.result.hashlabel": "内容的 SHA-256 哈希值：",
+                "diff.eyebrow": "为什么 Certsigner 与众不同",
+                "diff.liberdade.app": "公开、私有或加密存储",
+                "diff.liberdade.effect": "创作者完全掌控内容的曝光程度",
+                "diff.facilidade.app": "流程简单易懂",
+                "diff.facilidade.effect": "大幅降低技术和行政壁垒",
+                "diff.agilidade.app": "几分钟内完成注册和取得凭证",
+                "diff.agilidade.effect": "缩短创作与证据之间的时间间隔",
+                "diff.valorizacao.app": "记录创意、草稿、阶段与版本",
+                "diff.valorizacao.effect": "对整个创作过程进行文档保护",
+                "diff.globalidade.app": "由国际来源提供可验证的证据",
+                "diff.globalidade.effect": "减少对单一司法管辖区或权威机构的依赖",
+                "diff.versatilidade.app": "支持不同文件、内容和保密级别",
+                "diff.versatilidade.effect": "单一基础设施适用于多种创作类型",
+                "diff.seguranca.app": "加密 + 冗余 + 完整性控制",
+                "diff.seguranca.effect": "降低长期丢失或篡改的风险",
+                "diff.continuidade.app": "主动监控 + 预防性提醒",
+                "diff.continuidade.effect": "主动保障未来的可验证性 — 独有优势",
+                "diff.footnote": "证据连续性是最大的差异化优势：我们不仅生成证明，还会持续监控其多年的有效性。",
+                "security.bullet1": "多个具有公开认可度的验证来源（区块链、学术资料库、专利数据库等）",
+                "security.bullet2": "持续监控来源的可用性和有效性",
+                "security.bullet3": "在所有来源变得不可用之前发出预防性提醒",
+                "security.bullet4": "自动推荐续期、迁移或加密升级方案",
+                "security.panel.eyebrow": "独家功能",
+                "security.panel.title": "主动证据连续性",
+                "security.panel.desc": "在与某项存储相关的所有来源变得不可用之前，系统会通知用户，并推荐具体行动以保持证据的证明力。",
+                "security.panel.footer": "冗余 • 迁移 • 续期 • 审计",
+                "comparison.eyebrow": "现有方案的局限性",
+                "sources.eyebrow": "多重验证来源",
+                "sources.heading": "冗余即安全",
+                "sources.desc": "您内容的哈希值会锚定在多个国际公认的公共来源上，大幅降低失去可验证性的风险。",
+                "sources.other": "其他全球知识产权数据库",
+                "sources.footnote": "确切的来源列表会持续更新，以最大化韧性和法律认可度。",
+                "positioning.badge": "定位",
+                "positioning.heading": "一个全球化、易于使用且安全的平台，从第一时刻起就能记录、保存并检索创意和创作的证据。",
+                "positioning.desc": "Certsigner 让任何人都能快速记录自己的创作，自由选择将内容保持公开、私有或加密 — 不仅保护文件本身，还保护未来证明其存在、完整性和演变的能力。",
+                "cta.eyebrow": "准备好保护您的创意了吗？",
+                "cta.heading": "今天就开始记录您的创作。",
+                "cta.footer": "无需信用卡 • 提供免费版本 • 完整应用正在开发中",
+                "footer.rights": "版权所有。",
+                "footer.tagline": "一款补充专利、著作权和其他正式登记的证据文档工具。",
+                "footer.terms": "条款",
+                "footer.privacy": "隐私",
+                "footer.continuity": "证据连续性",
+                "footer.sources": "验证来源"
+            },
+            cs: {
+                "nav.test": "Vyzkoušet nyní",
+                "nav.start": "Začít zdarma",
+                "hero.title": "Dokažte, že váš nápad existoval jako první.",
+                "hero.subtitle": "Zaregistrujte během několika sekund existenci, integritu a datum svého díla. Vyberte si mezi veřejným, soukromým nebo šifrovaným uložením. Průběžné sledování platnosti důkazů.",
+                "mission.text": "Demokratizovat přístup ke spolehlivým důkazním materiálům a umožnit každému tvůrci — bez ohledu na finanční prostředky, umístění nebo právní znalosti — vytvářet ověřitelné a trvalé záznamy svých nápadů a děl.",
+                "how.title": "Jak Certsigner funguje",
+                "how.step1.title": "Nahrajte svůj obsah",
+                "how.step1.desc": "Text, soubor, obrázek, kód nebo jakékoli dílo. Systém automaticky vygeneruje jedinečný kryptografický otisk (SHA-256).",
+                "how.step2.title": "Zvolte typ uložení",
+                "how.step2.desc": "Veřejné (viditelné), soukromé (pouze vy) nebo šifrované (otevřete pouze svým klíčem). Expozici obsahu máte plně pod kontrolou.",
+                "how.step3.title": "Publikace na více zdrojích",
+                "how.step3.desc": "Otisk je současně zaregistrován ve více uznávaných veřejných zdrojích (blockchain, repozitáře, patentové databáze atd.), což vytváří redundanci a sociální důkaz.",
+                "how.step4.title": "Získejte svůj doklad",
+                "how.step4.desc": "Digitální certifikát + ověřovací odkazy + historie verzí. Průběžné sledování dostupnosti zdrojů.",
+                "diff.title": "Osm strategických výhod",
+                "security.title": "Nestačí vytvořit důkaz. Je třeba jej udržet platný.",
+                "cta.test": "Vyzkoušet generátor nyní",
+                "cta.access": "Požádat o early access",
+                "diff.concept": "Koncept",
+                "diff.application": "Uplatnění v Certsigner",
+                "diff.differential": "Výhoda",
+                "diff.liberdade": "Svoboda",
+                "diff.facilidade": "Jednoduchost",
+                "diff.agilidade": "Rychlost",
+                "diff.valorizacao": "Zhodnocení tvorby",
+                "diff.globalidade": "Globálnost",
+                "diff.versatilidade": "Všestrannost",
+                "diff.seguranca": "Bezpečnost",
+                "diff.continuidade": "Kontinuita důkazu",
+                "security.subtitle": "BEZPEČNOST A KONTINUITA",
+                "security.main": "Nestačí vytvořit důkaz. Je třeba jej udržet platný.",
+                "security.desc": "Většina služeb pro časová razítka nebo blockchain vydá certifikát a veškerou odpovědnost za uchování, ověřování a migraci důkazu při změně technologií přenechá uživateli.",
+                "comparison.title": "Proč tradiční alternativy zanechávají mezery?",
+                "comparison.patents": "Patenty",
+                "comparison.copyright": "Autorská práva",
+                "comparison.cloud": "Cloudové úložiště",
+                "comparison.email": "E-mail sám sobě",
+                "comparison.timestamp": "Izolované časové razítko",
+                "comparison.blockchain": "Izolovaný blockchain",
+                "comparison.patents.desc": "Vyžadují přísné právní požadavky, dlouhé řízení, vysoké náklady a územní ochranu. Nechrání abstraktní nápady ani předběžné verze.",
+                "comparison.copyright.desc": "Chrání vyjádření, nikoli samotnou myšlenku. Registrace není povinná, ale prokázat datum, autorství a integritu ve sporu může být bez nezávislých důkazů obtížné.",
+                "comparison.cloud.desc": "Ukazuje, že soubor existoval v účtu, ale nenabízí nezávislý důkaz integrity, kvalifikované časové razítko ani ověření důvěryhodnou třetí stranou.",
+                "comparison.email.desc": "Lze zpochybnit pravost, integritu přílohy, kontrolu nad účtem i izolovanou důkazní sílu.",
+                "comparison.timestamp.desc": "Prokazuje existenci v daném okamžiku, ale obvykle nenabízí bezpečné úložiště, správu verzí, nastavitelnou důvěrnost ani více zdrojů.",
+                "comparison.blockchain.desc": "Zaznamenává otisk, ale neřeší identitu autora, právní vlastnictví, uchování původního souboru, důvěrnost ani srozumitelnost dokladu pro běžného uživatele.",
+                "comparison.contribution": "Přínos Certsigner:",
+                "comparison.contribution.desc": "Nabízíme počáteční vrstvu dostupné a ověřitelné dokumentace, která doplňuje (a nenahrazuje) patenty, autorská práva a další formální mechanismy. Zkracuje okno zranitelnosti mezi vznikem díla a formální ochranou.",
+                "nav.concept": "Koncept",
+                "nav.how": "Jak to funguje",
+                "nav.differentials": "Výhody",
+                "nav.security": "Bezpečnost",
+                "nav.comparison": "Srovnání",
+                "nav.mobile.test": "Vyzkoušet",
+                "nav.mobile.start": "Začít",
+                "hero.eyebrow": "GLOBÁLNÍ PLATFORMA PRO PRIORITU DŮKAZŮ",
+                "hero.cta.demo": "Vyzkoušet generátor důkazu",
+                "hero.cta.concept": "Pochopit koncept",
+                "hero.stat.global": "Globální",
+                "hero.stat.verifiable": "Ověřitelné",
+                "hero.stat.immutable": "Neměnné v čase",
+                "concept.eyebrow": "ZÁKLADNÍ KONCEPT",
+                "concept.heading": "Certifikační služba pro prioritu nápadů dostupná všem.",
+                "concept.badge1": "Doplňuje patenty a autorská práva",
+                "concept.badge2": "Mezinárodní zdroje ověření",
+                "concept.principle.eyebrow": "ZÁKLADNÍ PRINCIP",
+                "concept.principle.quote": "„Každé dílo by mělo být možné okamžitě a globálně zdokumentovat, bez ohledu na ekonomickou situaci, geografickou polohu nebo právní znalosti jeho tvůrce.“",
+                "concept.principle.source": "— Shrnutí projektu Certsigner",
+                "how.eyebrow": "PROCES VE 4 KROCÍCH",
+                "how.subtitle": "Od obsahu k ověřitelnému důkazu za pár minut. Bez byrokracie, bez vysokých poplatků.",
+                "demo.eyebrow": "INTERAKTIVNÍ DEMONSTRACE",
+                "demo.heading": "Vyzkoušejte generátor důkazu priority",
+                "demo.subtext": "Bez registrace • Okamžitý výsledek • Pouze ukázka",
+                "demo.placeholder": "Vložte sem svůj nápad, popis vynálezu, text díla, kód nebo jakýkoli obsah...",
+                "demo.button": "Vygenerovat důkaz priority",
+                "demo.disclaimer": "Toto je pouze ukázka. Skutečný otisk se registruje na více nezávislých zdrojích pro maximální důkazní odolnost.",
+                "demo.result.title": "Důkaz byl úspěšně vygenerován",
+                "demo.result.copy": "Kopírovat otisk",
+                "demo.result.hashlabel": "SHA-256 otisk obsahu:",
+                "diff.eyebrow": "PROČ JE CERTSIGNER JINÝ",
+                "diff.liberdade.app": "Veřejné, soukromé nebo šifrované uložení",
+                "diff.liberdade.effect": "Tvůrce má plnou kontrolu nad expozicí obsahu",
+                "diff.facilidade.app": "Jednoduchý a srozumitelný postup",
+                "diff.facilidade.effect": "Výrazné snížení technických a byrokratických bariér",
+                "diff.agilidade.app": "Registrace a doklad během pár minut",
+                "diff.agilidade.effect": "Kratší časový odstup mezi vznikem díla a důkazem",
+                "diff.valorizacao.app": "Zaznamenává nápady, návrhy, fáze i verze",
+                "diff.valorizacao.effect": "Dokumentární ochrana celého tvůrčího procesu",
+                "diff.globalidade.app": "Důkazy ověřitelné mezinárodními zdroji",
+                "diff.globalidade.effect": "Menší závislost na jediné jurisdikci či autoritě",
+                "diff.versatilidade.app": "Různé soubory, obsahy a úrovně důvěrnosti",
+                "diff.versatilidade.effect": "Jediná infrastruktura pro více typů tvorby",
+                "diff.seguranca.app": "Šifrování + redundance + kontrola integrity",
+                "diff.seguranca.effect": "Snížení rizika ztráty nebo pozměnění v průběhu času",
+                "diff.continuidade.app": "Aktivní monitorování + preventivní upozornění",
+                "diff.continuidade.effect": "Aktivní udržování budoucí ověřitelnosti — jedinečná výhoda",
+                "diff.footnote": "Kontinuita důkazu je hlavní výhodou: nejen že důkaz vytvoříme, ale i sledujeme jeho platnost po celá léta.",
+                "security.bullet1": "Více veřejně uznávaných zdrojů ověření (blockchain, akademické repozitáře, patentové databáze atd.)",
+                "security.bullet2": "Průběžné sledování dostupnosti a platnosti zdrojů",
+                "security.bullet3": "Preventivní upozornění dříve, než se všechny zdroje stanou nedostupnými",
+                "security.bullet4": "Automatická doporučení obnovy, migrace nebo kryptografické aktualizace",
+                "security.panel.eyebrow": "EXKLUZIVNÍ FUNKCE",
+                "security.panel.title": "Aktivní kontinuita důkazu",
+                "security.panel.desc": "Než se všechny zdroje spojené s uložením stanou nedostupnými, systém uživatele informuje a doporučí konkrétní kroky k zachování důkazní síly.",
+                "security.panel.footer": "Redundance • Migrace • Obnova • Audit",
+                "comparison.eyebrow": "OMEZENÍ SOUČASNÝCH MOŽNOSTÍ",
+                "sources.eyebrow": "VÍCE ZDROJŮ OVĚŘENÍ",
+                "sources.heading": "Redundance znamená bezpečnost",
+                "sources.desc": "Otisk vašeho obsahu je ukotven v několika mezinárodně uznávaných veřejných zdrojích, což výrazně snižuje riziko ztráty ověřitelnosti.",
+                "sources.other": "Další globální databáze duševního vlastnictví",
+                "sources.footnote": "Přesný seznam zdrojů je průběžně aktualizován, aby se maximalizovala odolnost a právní uznání.",
+                "positioning.badge": "POZICOVÁNÍ",
+                "positioning.heading": "Globální, dostupná a bezpečná platforma pro registraci, uchování a vyhledání důkazů o nápadech a dílech od prvního okamžiku.",
+                "positioning.desc": "Certsigner umožňuje komukoli rychle zdokumentovat své dílo se svobodou zvolit veřejný, soukromý nebo šifrovaný obsah — a chránit tak nejen samotný soubor, ale i budoucí schopnost prokázat jeho existenci, integritu a vývoj.",
+                "cta.eyebrow": "PŘIPRAVENI CHRÁNIT SVÉ NÁPADY?",
+                "cta.heading": "Začněte dokumentovat svá díla ještě dnes.",
+                "cta.footer": "Bez kreditní karty • Dostupná bezplatná verze • Kompletní aplikace ve vývoji",
+                "footer.rights": "Všechna práva vyhrazena.",
+                "footer.tagline": "Nástroj pro důkazní dokumentaci doplňující patenty, autorská práva a další formální registrace.",
+                "footer.terms": "Podmínky",
+                "footer.privacy": "Soukromí",
+                "footer.continuity": "Kontinuita důkazu",
+                "footer.sources": "Zdroje ověření"
+            }
+        };
+
+        // Safe wrappers: localStorage throws a SecurityError for "opaque origins"
+        // (e.g. when the file is opened directly as file:///... instead of served
+        // over http/https). Without these guards, that throw was uncaught and
+        // aborted initSite() before the translations were ever applied.
+        function safeGetLang() {
+            try {
+                return localStorage.getItem('certsigner-lang');
+            } catch (e) {
+                return null;
+            }
+        }
+
+        function safeSetLang(lang) {
+            try {
+                localStorage.setItem('certsigner-lang', lang);
+            } catch (e) {
+                // Storage unavailable (opaque origin, privacy mode, etc.) — ignore.
+                // The language still applies for this page view, it just won't persist.
+            }
+        }
+
+        function switchLanguage(lang) {
+            const elements = document.querySelectorAll('[data-i18n]');
+            
+            elements.forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (translations[lang] && translations[lang][key]) {
+                    el.textContent = translations[lang][key];
+                }
+            });
+
+            // Translate placeholder text (e.g. textarea/input placeholders)
+            const placeholderElements = document.querySelectorAll('[data-i18n-placeholder]');
+            placeholderElements.forEach(el => {
+                const key = el.getAttribute('data-i18n-placeholder');
+                if (translations[lang] && translations[lang][key]) {
+                    el.setAttribute('placeholder', translations[lang][key]);
+                }
+            });
+            
+            // Update document title
+            if (lang === 'en') {
+                document.title = "Certsigner | Evidence of Priority for Ideas and Creations";
+            } else if (lang === 'es') {
+                document.title = "Certsigner | Evidencia de Prioridad para Ideas y Creaciones";
+            } else if (lang === 'zh') {
+                document.title = "Certsigner | 创意优先权证据平台";
+            } else if (lang === 'cs') {
+                document.title = "Certsigner | Důkaz priority pro nápady a díla";
+            } else {
+                document.title = "Certsigner | Evidência de Prioridade para Ideias e Criações";
+            }
+            
+            // Save preference
+            safeSetLang(lang);
+        }
+        
+        function initLanguage() {
+            const selector = document.getElementById('lang-selector');
+            const savedLang = safeGetLang() || 'pt';
+            
+            if (selector) {
+                selector.value = savedLang;
+            }
+            // Apply saved language on load regardless of whether the <select>
+            // element was found, and regardless of storage errors above.
+            setTimeout(() => {
+                switchLanguage(savedLang);
+            }, 100);
+        }
+
+        function initSite() {
+            applyBranding();
+            initMobileMenu();
+            initNavbar();
+            initSmoothScroll();
+            initLanguage();
+            
+            // Keyboard support for demo
+            const demoInput = document.getElementById('demo-input');
+            if (demoInput) {
+                demoInput.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        generateDemoHash();
+                    }
+                });
+            }
+            
+            console.log('%c[Certsigner Site 1] Site profissional carregado com suporte multilíngue.', 'color:#1e40af');
+        }
+        
+        window.onload = initSite;
+    </script>
+
+    <!-- NAV -->
+    <nav id="main-nav" class="bg-white border-b border-slate-200 sticky top-0 z-50 transition-all">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="flex items-center justify-between h-16">
+                <!-- Logo -->
+                <div class="flex items-center gap-x-3">
+                    <img src="data:image/png;base64,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" alt="Certsigner Logo" class="h-9 w-auto" id="brand-logo">
+                    <div>
+                        <span class="brand-name text-2xl font-bold tracking-tighter text-slate-900">Certsigner</span>
+                    </div>
+                </div>
+                
+                <!-- Desktop Nav -->
+                <div class="hidden md:flex items-center gap-x-8 text-sm font-medium">
+                    <a href="#conceito" class="text-slate-600 hover:text-slate-900 transition-colors" data-i18n="nav.concept">Conceito</a>
+                    <a href="#como-funciona" class="text-slate-600 hover:text-slate-900 transition-colors" data-i18n="nav.how">Como Funciona</a>
+                    <a href="#diferenciais" class="text-slate-600 hover:text-slate-900 transition-colors" data-i18n="nav.differentials">Diferenciais</a>
+                    <a href="#seguranca" class="text-slate-600 hover:text-slate-900 transition-colors" data-i18n="nav.security">Segurança</a>
+                    <a href="#comparacao" class="text-slate-600 hover:text-slate-900 transition-colors" data-i18n="nav.comparison">Comparação</a>
+                </div>
+                
+                <div class="hidden md:flex items-center gap-x-3">
+                    <!-- Language Selector -->
+                    <div class="relative">
+                        <select id="lang-selector" onchange="switchLanguage(this.value)" 
+                                class="appearance-none bg-white border border-slate-300 text-sm rounded-xl px-3 py-1.5 pr-8 cursor-pointer focus:outline-none focus:border-[#1e40af]">
+                            <option value="pt">🇧🇷 Português</option>
+                            <option value="en">🇬🇧 English</option>
+                            <option value="es">🇪🇸 Español</option>
+                            <option value="zh">🇨🇳 中文</option>
+                            <option value="cs">🇨🇿 Čeština</option>
+                        </select>
+                    </div>
+
+                    <button onclick="document.getElementById('demo-input').focus(); document.getElementById('demo-section').scrollIntoView({behavior:'smooth'})" 
+                            class="px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-100 rounded-xl transition-colors" data-i18n="nav.test">
+                        Testar Agora
+                    </button>
+                    <button onclick="alert('O aplicativo completo será lançado em breve. Esta é uma versão informativa do site. Entre em contato para early access.')" 
+                            class="px-5 py-2 bg-[#1e40af] hover:bg-[#1e3a8a] text-white text-sm font-semibold rounded-2xl transition-all active:scale-[0.985]" data-i18n="nav.start">
+                        Começar Grátis
+                    </button>
+                </div>
+                
+                <!-- Mobile -->
+                <button id="mobile-menu-btn" class="md:hidden w-10 h-10 flex items-center justify-center text-slate-600">
+                    <i class="fas fa-bars text-xl"></i>
+                </button>
+            </div>
+        </div>
+        
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="hidden md:hidden border-t bg-white px-6 py-4">
+            <div class="flex flex-col gap-y-3 text-sm font-medium">
+                <a href="#conceito" class="py-1 text-slate-700" data-i18n="nav.concept">Conceito</a>
+                <a href="#como-funciona" class="py-1 text-slate-700" data-i18n="nav.how">Como Funciona</a>
+                <a href="#diferenciais" class="py-1 text-slate-700" data-i18n="nav.differentials">Diferenciais</a>
+                <a href="#seguranca" class="py-1 text-slate-700" data-i18n="nav.security">Segurança</a>
+                <a href="#comparacao" class="py-1 text-slate-700" data-i18n="nav.comparison">Comparação</a>
+                <div class="pt-3 border-t flex gap-3">
+                    <button onclick="document.getElementById('demo-section').scrollIntoView({behavior:'smooth'})" class="flex-1 py-2.5 text-sm font-semibold border border-slate-300 rounded-2xl" data-i18n="nav.mobile.test">Testar</button>
+                    <button onclick="alert('App em breve — early access disponível.')" class="flex-1 py-2.5 bg-[#1e40af] text-white text-sm font-semibold rounded-2xl" data-i18n="nav.mobile.start">Começar</button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- HERO -->
+    <header class="bg-white border-b border-slate-100">
+        <div class="max-w-5xl mx-auto px-6 pt-16 pb-20 text-center">
+            <div class="inline-flex items-center gap-x-2 px-4 py-1.5 rounded-3xl bg-slate-100 text-slate-600 text-xs font-semibold tracking-[1px] mb-6">
+                <div class="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
+                <span data-i18n="hero.eyebrow">PLATAFORMA GLOBAL DE PRIORIDADE PROBATÓRIA</span>
+            </div>
+            
+            <h1 class="text-6xl md:text-7xl font-bold tracking-tighter heading-font text-balance leading-none">
+                <span class="brand-name">Certsigner</span><br>
+                <span class="text-slate-800" data-i18n="hero.title">Prove que sua ideia<br>existia primeiro.</span>
+            </h1>
+            
+            <p id="hero-subtitle" class="mt-6 max-w-2xl mx-auto text-xl text-slate-600 leading-relaxed" data-i18n="hero.subtitle">
+                <!-- Dinâmico via CONFIG -->
+            </p>
+            
+            <div class="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
+                <button onclick="document.getElementById('demo-section').scrollIntoView({behavior:'smooth', block:'center'})" 
+                        class="group w-full sm:w-auto px-8 py-4 bg-white hover:bg-slate-50 border border-slate-300 hover:border-slate-400 text-slate-800 font-semibold rounded-3xl flex items-center justify-center gap-x-3 transition-all text-base shadow-sm">
+                    <span data-i18n="hero.cta.demo">Testar o Gerador de Prova</span>
+                    <i class="fas fa-arrow-right group-hover:translate-x-0.5 transition"></i>
+                </button>
+                
+                <button onclick="document.getElementById('conceito').scrollIntoView({behavior:'smooth'})" 
+                        class="w-full sm:w-auto px-8 py-4 bg-[#1e40af] hover:bg-[#1e3a8a] active:bg-[#1e3a8a] text-white font-semibold rounded-3xl flex items-center justify-center gap-x-2 transition-all text-base">
+                    <span data-i18n="hero.cta.concept">Entender o Conceito</span>
+                </button>
+            </div>
+            
+            <div class="mt-8 flex items-center justify-center gap-x-8 text-xs text-slate-500">
+                <div class="flex items-center gap-x-1.5"><i class="fas fa-globe text-emerald-600"></i> <span data-i18n="hero.stat.global">Global</span></div>
+                <div class="flex items-center gap-x-1.5"><i class="fas fa-shield-halved text-emerald-600"></i> <span data-i18n="hero.stat.verifiable">Verificável</span></div>
+                <div class="flex items-center gap-x-1.5"><i class="fas fa-clock text-emerald-600"></i> <span data-i18n="hero.stat.immutable">Imutável no tempo</span></div>
+            </div>
+        </div>
+    </header>
+
+    <!-- CONCEITO / MISSÃO -->
+    <section id="conceito" class="max-w-5xl mx-auto px-6 py-16">
+        <div class="grid md:grid-cols-12 gap-x-12 items-center">
+            <div class="md:col-span-7">
+                <div class="uppercase tracking-[2px] text-xs font-bold text-[#1e40af] mb-3" data-i18n="concept.eyebrow">O CONCEITO CENTRAL</div>
+                <h2 class="section-header leading-none tracking-tighter" data-i18n="concept.heading">Uma certificadora de<br>prioridade de ideias<br>acessível a todos.</h2>
+                
+                <div class="mt-6 text-[15px] leading-relaxed text-slate-600 max-w-prose" id="mission-text" data-i18n="mission.text">
+                    <!-- Dinâmico -->
+                </div>
+                
+                <div class="mt-8 flex flex-wrap gap-3">
+                    <div class="trust-badge px-4 py-2 rounded-2xl text-xs font-medium flex items-center gap-x-2">
+                        <i class="fas fa-balance-scale"></i> 
+                        <span data-i18n="concept.badge1">Complementa patentes e direitos autorais</span>
+                    </div>
+                    <div class="trust-badge px-4 py-2 rounded-2xl text-xs font-medium flex items-center gap-x-2">
+                        <i class="fas fa-globe"></i> 
+                        <span data-i18n="concept.badge2">Fontes internacionais de validação</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="md:col-span-5 mt-10 md:mt-0">
+                <div class="bg-white border border-slate-200 rounded-3xl p-7 shadow-sm">
+                    <div class="text-xs uppercase tracking-widest text-slate-500 mb-4" data-i18n="concept.principle.eyebrow">PRINCÍPIO FUNDAMENTAL</div>
+                    <div class="text-xl font-semibold leading-tight" data-i18n="concept.principle.quote">"Toda criação deve poder ser documentada imediata e globalmente, independentemente da condição econômica, da localização geográfica ou do conhecimento jurídico de seu criador."</div>
+                    <div class="mt-6 text-xs text-slate-500 border-t pt-4" data-i18n="concept.principle.source">— Resumo do Projeto Certsigner</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- COMO FUNCIONA -->
+    <section id="como-funciona" class="bg-white py-16 border-y border-slate-100">
+        <div class="max-w-6xl mx-auto px-6">
+            <div class="text-center mb-12">
+                <div class="text-[#1e40af] text-xs font-bold tracking-[1.5px]" data-i18n="how.eyebrow">PROCESSO EM 4 ETAPAS</div>
+                <h2 class="section-header mt-2" data-i18n="how.title">Como o <span class="brand-name">Certsigner</span> funciona</h2>
+                <p class="mt-3 text-slate-600 max-w-md mx-auto" data-i18n="how.subtitle">Do conteúdo à evidência verificável em minutos. Sem burocracia, sem taxas elevadas.</p>
+            </div>
+            
+            <div class="grid md:grid-cols-4 gap-6">
+                <!-- Step 1 -->
+                <div class="step bg-slate-50 border border-slate-200 rounded-3xl p-6">
+                    <div class="w-9 h-9 flex items-center justify-center bg-[#1e40af] text-white rounded-2xl text-xl font-bold mb-5">1</div>
+                    <div class="font-semibold text-lg" data-i18n="how.step1.title">Envie seu conteúdo</div>
+                    <div class="mt-2 text-sm text-slate-600" data-i18n="how.step1.desc">Texto, arquivo, imagem, código ou qualquer criação. O sistema gera automaticamente o hash criptográfico (SHA-256) único.</div>
+                </div>
+                
+                <div class="step bg-slate-50 border border-slate-200 rounded-3xl p-6">
+                    <div class="w-9 h-9 flex items-center justify-center bg-[#1e40af] text-white rounded-2xl text-xl font-bold mb-5">2</div>
+                    <div class="font-semibold text-lg" data-i18n="how.step2.title">Escolha o tipo de depósito</div>
+                    <div class="mt-2 text-sm text-slate-600" data-i18n="how.step2.desc">Público (visível), Privado (apenas você) ou Criptografado (aberto apenas com sua chave). Você controla a exposição.</div>
+                </div>
+                
+                <div class="step bg-slate-50 border border-slate-200 rounded-3xl p-6">
+                    <div class="w-9 h-9 flex items-center justify-center bg-[#1e40af] text-white rounded-2xl text-xl font-bold mb-5">3</div>
+                    <div class="font-semibold text-lg" data-i18n="how.step3.title">Publicação multi-fonte</div>
+                    <div class="mt-2 text-sm text-slate-600" data-i18n="how.step3.desc">O hash é registrado simultaneamente em múltiplas fontes públicas reconhecidas (blockchain, repositórios, bases de patentes, etc.) gerando redundância e prova social.</div>
+                </div>
+                
+                <div class="step bg-slate-50 border border-slate-200 rounded-3xl p-6">
+                    <div class="w-9 h-9 flex items-center justify-center bg-[#1e40af] text-white rounded-2xl text-xl font-bold mb-5">4</div>
+                    <div class="font-semibold text-lg" data-i18n="how.step4.title">Receba seu comprovante</div>
+                    <div class="mt-2 text-sm text-slate-600" data-i18n="how.step4.desc">Certificado digital + links de verificação + histórico de versões. Monitoramento contínuo da disponibilidade das fontes.</div>
+                </div>
+            </div>
+            
+            <div class="mt-10 flex justify-center">
+                <img src="data:image/png;base64,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" alt="Linha do tempo do processo de certificação" class="max-w-[620px] w-full rounded-2xl border border-slate-200 shadow-sm">
+            </div>
+            
+            <!-- Demo Section -->
+            <div id="demo-section" class="mt-14 bg-white border border-slate-200 rounded-3xl p-8 md:p-10">
+                <div class="flex flex-col md:flex-row md:items-end gap-4 mb-6">
+                    <div>
+                        <div class="text-xs font-bold tracking-widest text-emerald-600" data-i18n="demo.eyebrow">DEMONSTRAÇÃO INTERATIVA</div>
+                        <div class="text-2xl font-semibold tracking-tight" data-i18n="demo.heading">Teste o gerador de prova de prioridade</div>
+                    </div>
+                    <div class="text-sm text-slate-500 md:ml-auto" data-i18n="demo.subtext">Sem cadastro • Resultado instantâneo • Apenas demonstração</div>
+                </div>
+                
+                <div class="flex flex-col md:flex-row gap-4">
+                    <div class="flex-1">
+                        <textarea id="demo-input" rows="3" placeholder="Cole aqui sua ideia, descrição de invenção, texto de obra, código ou qualquer conteúdo..." 
+                                  data-i18n-placeholder="demo.placeholder"
+                                  class="w-full border border-slate-300 focus:border-[#1e40af] rounded-2xl px-5 py-4 text-sm resize-y min-h-[92px] font-light"></textarea>
+                        <button id="demo-btn" onclick="generateDemoHash()" 
+                                class="mt-3 w-full md:w-auto px-7 py-3.5 bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 transition text-white text-sm font-semibold rounded-2xl flex items-center justify-center gap-x-2">
+                            <i class="fas fa-fingerprint mr-2"></i> 
+                            <span data-i18n="demo.button">Gerar Prova de Prioridade</span>
+                        </button>
+                    </div>
+                    
+                    <div id="demo-result" class="hidden flex-1 border border-emerald-200 bg-emerald-50/60 rounded-2xl p-5 text-sm">
+                        <div class="flex items-center justify-between mb-3">
+                            <div class="font-semibold text-emerald-800 flex items-center gap-x-2">
+                                <i class="fas fa-shield-halved"></i> 
+                                <span data-i18n="demo.result.title">Prova Gerada com Sucesso</span>
+                            </div>
+                            <button onclick="copyHash()" class="copy-hash-btn text-xs px-3 py-1 border border-emerald-300 hover:bg-white rounded-xl flex items-center gap-x-1.5 text-emerald-700">
+                                <i class="fas fa-copy"></i> <span data-i18n="demo.result.copy">Copiar Hash</span>
+                            </button>
+                        </div>
+                        
+                        <div class="mb-1 text-xs text-emerald-700 font-medium" data-i18n="demo.result.hashlabel">Hash SHA-256 do conteúdo:</div>
+                        <div id="demo-hash" class="hash-demo text-[11px] bg-white border border-emerald-100 p-3 rounded-xl break-all font-mono text-emerald-900 select-all"></div>
+                        
+                        <div id="demo-proof" class="mt-4 text-xs"></div>
+                    </div>
+                </div>
+                <p class="text-[10px] text-center text-slate-400 mt-4" data-i18n="demo.disclaimer">Este é um demonstrativo. O hash real é registrado em múltiplas fontes independentes para máxima resiliência probatória.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- DIFERENCIAIS -->
+    <section id="diferenciais" class="max-w-6xl mx-auto px-6 py-16">
+        <div class="text-center mb-10">
+            <div class="text-[#1e40af] text-xs font-bold tracking-[1.5px]" data-i18n="diff.eyebrow">POR QUE certsigner É DIFERENTE</div>
+            <h2 class="section-header mt-1 tracking-tighter" data-i18n="diff.title">Oito diferenciais estratégicos</h2>
+        </div>
+        
+        <div class="overflow-x-auto">
+            <table class="diff-table w-full min-w-[820px] border border-slate-200 rounded-3xl overflow-hidden text-sm">
+                <thead>
+                    <tr>
+                        <th class="px-6 py-4 text-left font-semibold" data-i18n="diff.concept">Conceito</th>
+                        <th class="px-6 py-4 text-left font-semibold" data-i18n="diff.application">Aplicação no Certsigner</th>
+                        <th class="px-6 py-4 text-left font-semibold w-[38%]" data-i18n="diff.differential">Diferencial</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100 bg-white text-sm">
+                    <tr>
+                        <td class="px-6 py-4 font-semibold" data-i18n="diff.liberdade">Liberdade</td>
+                        <td class="px-6 py-4 text-slate-600" data-i18n="diff.liberdade.app">Depósito público, privado ou criptografado</td>
+                        <td class="px-6 py-4 text-slate-600" data-i18n="diff.liberdade.effect">O criador controla totalmente a exposição do conteúdo</td>
+                    </tr>
+                    <tr>
+                        <td class="px-6 py-4 font-semibold" data-i18n="diff.facilidade">Facilidade</td>
+                        <td class="px-6 py-4 text-slate-600" data-i18n="diff.facilidade.app">Procedimento simples e compreensível</td>
+                        <td class="px-6 py-4 text-slate-600" data-i18n="diff.facilidade.effect">Redução drástica de barreiras técnicas e burocráticas</td>
+                    </tr>
+                    <tr>
+                        <td class="px-6 py-4 font-semibold" data-i18n="diff.agilidade">Agilidade</td>
+                        <td class="px-6 py-4 text-slate-600" data-i18n="diff.agilidade.app">Registro e comprovante em minutos</td>
+                        <td class="px-6 py-4 text-slate-600" data-i18n="diff.agilidade.effect">Menor intervalo entre criação e evidência probatória</td>
+                    </tr>
+                    <tr>
+                        <td class="px-6 py-4 font-semibold" data-i18n="diff.valorizacao">Valorização da Criação</td>
+                        <td class="px-6 py-4 text-slate-600" data-i18n="diff.valorizacao.app">Registra ideias, rascunhos, etapas e versões</td>
+                        <td class="px-6 py-4 text-slate-600" data-i18n="diff.valorizacao.effect">Proteção documental do processo criativo completo</td>
+                    </tr>
+                    <tr>
+                        <td class="px-6 py-4 font-semibold" data-i18n="diff.globalidade">Globalidade</td>
+                        <td class="px-6 py-4 text-slate-600" data-i18n="diff.globalidade.app">Evidências verificáveis por fontes internacionais</td>
+                        <td class="px-6 py-4 text-slate-600" data-i18n="diff.globalidade.effect">Menor dependência de uma única jurisdição ou autoridade</td>
+                    </tr>
+                    <tr>
+                        <td class="px-6 py-4 font-semibold" data-i18n="diff.versatilidade">Versatilidade</td>
+                        <td class="px-6 py-4 text-slate-600" data-i18n="diff.versatilidade.app">Diferentes arquivos, conteúdos e níveis de sigilo</td>
+                        <td class="px-6 py-4 text-slate-600" data-i18n="diff.versatilidade.effect">Uma única infraestrutura para múltiplos tipos de criação</td>
+                    </tr>
+                    <tr>
+                        <td class="px-6 py-4 font-semibold" data-i18n="diff.seguranca">Segurança</td>
+                        <td class="px-6 py-4 text-slate-600" data-i18n="diff.seguranca.app">Criptografia + redundância + controle de integridade</td>
+                        <td class="px-6 py-4 text-slate-600" data-i18n="diff.seguranca.effect">Redução do risco de perda ou adulteração ao longo do tempo</td>
+                    </tr>
+                    <tr class="bg-emerald-50/60">
+                        <td class="px-6 py-4 font-semibold text-emerald-800" data-i18n="diff.continuidade">Continuidade Probatória</td>
+                        <td class="px-6 py-4 text-emerald-700" data-i18n="diff.continuidade.app">Monitoramento ativo + alertas preventivos</td>
+                        <td class="px-6 py-4 text-emerald-700 font-medium" data-i18n="diff.continuidade.effect">Preservação ativa da verificabilidade futura — diferencial único</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <p class="text-center text-xs text-slate-500 mt-4" data-i18n="diff.footnote">A continuidade probatória é o grande diferencial: não apenas geramos a prova, mas monitoramos sua validade ao longo dos anos.</p>
+    </section>
+
+    <!-- SEGURANÇA -->
+    <section id="seguranca" class="bg-slate-900 text-white py-16">
+        <div class="max-w-5xl mx-auto px-6">
+            <div class="grid md:grid-cols-2 gap-x-16 gap-y-10 items-center">
+                <div>
+                    <div class="uppercase text-emerald-400 text-xs tracking-[2px] font-bold mb-3" data-i18n="security.subtitle">SEGURANÇA &amp; CONTINUIDADE</div>
+                    <h2 class="text-5xl font-bold tracking-tighter leading-none" data-i18n="security.main">Não basta criar a prova.<br>É preciso mantê-la válida.</h2>
+                    
+                    <p class="mt-6 text-slate-300 leading-relaxed" data-i18n="security.desc">A maioria dos serviços de timestamp ou blockchain entrega um certificado e transfere ao usuário toda a responsabilidade de guardar, verificar e migrar a evidência quando tecnologias mudam.</p>
+                    
+                    <div class="mt-8 space-y-4">
+                        <div class="flex gap-4">
+                            <div class="text-emerald-400 mt-1"><i class="fas fa-check-double fa-fw"></i></div>
+                            <div class="text-sm" data-i18n="security.bullet1">Múltiplas fontes de validação com reconhecimento público (blockchain, repositórios acadêmicos, bases de patentes, etc.)</div>
+                        </div>
+                        <div class="flex gap-4">
+                            <div class="text-emerald-400 mt-1"><i class="fas fa-check-double fa-fw"></i></div>
+                            <div class="text-sm" data-i18n="security.bullet2">Monitoramento contínuo da disponibilidade e validade das fontes</div>
+                        </div>
+                        <div class="flex gap-4">
+                            <div class="text-emerald-400 mt-1"><i class="fas fa-check-double fa-fw"></i></div>
+                            <div class="text-sm" data-i18n="security.bullet3">Alertas preventivos antes que todas as fontes se tornem indisponíveis</div>
+                        </div>
+                        <div class="flex gap-4">
+                            <div class="text-emerald-400 mt-1"><i class="fas fa-check-double fa-fw"></i></div>
+                            <div class="text-sm" data-i18n="security.bullet4">Recomendações automáticas de renovação, migração ou atualização criptográfica</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-slate-800 border border-slate-700 rounded-3xl p-8">
+                    <div class="text-xs uppercase tracking-widest text-emerald-400 mb-4" data-i18n="security.panel.eyebrow">RECURSO EXCLUSIVO</div>
+                    <div class="text-2xl font-semibold leading-tight" data-i18n="security.panel.title">Continuidade Probatória Ativa</div>
+                    <p class="mt-4 text-sm text-slate-300" data-i18n="security.panel.desc">Antes que todas as fontes associadas a um depósito se tornem indisponíveis, o sistema informa o usuário e recomenda ações concretas para preservar a força probatória da evidência.</p>
+                    
+                    <div class="mt-8 pt-6 border-t border-slate-700 text-xs flex items-center gap-x-2 text-emerald-400">
+                        <i class="fas fa-sync fa-fw"></i> 
+                        <span class="font-medium" data-i18n="security.panel.footer">Redundância • Migração • Renovação • Auditoria</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- COMPARAÇÃO / LIMITAÇÕES -->
+    <section id="comparacao" class="max-w-6xl mx-auto px-6 py-16">
+        <div class="mb-10">
+            <div class="text-[#1e40af] text-xs font-bold tracking-[1.5px]" data-i18n="comparison.eyebrow">LIMITAÇÕES DAS OPÇÕES ATUAIS</div>
+            <h2 class="section-header tracking-tighter mt-1" data-i18n="comparison.title">Por que as alternativas tradicionais deixam lacunas?</h2>
+        </div>
+        
+        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
+            <div class="bg-white border border-slate-200 p-6 rounded-3xl">
+                <div class="font-semibold mb-2 flex items-center gap-x-2"><i class="fas fa-file-contract text-amber-600"></i> <span data-i18n="comparison.patents">Patentes</span></div>
+                <div class="text-sm text-slate-600" data-i18n="comparison.patents.desc">Exigem requisitos legais rigorosos, tramitação longa, custos elevados e proteção territorial. Não protegem ideias abstratas ou versões preliminares.</div>
+            </div>
+            <div class="bg-white border border-slate-200 p-6 rounded-3xl">
+                <div class="font-semibold mb-2 flex items-center gap-x-2"><i class="fas fa-copyright text-amber-600"></i> <span data-i18n="comparison.copyright">Direitos Autorais</span></div>
+                <div class="text-sm text-slate-600" data-i18n="comparison.copyright.desc">Protegem a expressão, não a ideia. O registro não é obrigatório, mas provar data, autoria e integridade em conflitos pode ser difícil sem evidências independentes.</div>
+            </div>
+            <div class="bg-white border border-slate-200 p-6 rounded-3xl">
+                <div class="font-semibold mb-2 flex items-center gap-x-2"><i class="fas fa-cloud text-amber-600"></i> <span data-i18n="comparison.cloud">Armazenamento em Nuvem</span></div>
+                <div class="text-sm text-slate-600" data-i18n="comparison.cloud.desc">Mostra que o arquivo existia na conta, mas não oferece prova independente de integridade, marca temporal qualificada ou validação por terceiros confiáveis.</div>
+            </div>
+            <div class="bg-white border border-slate-200 p-6 rounded-3xl">
+                <div class="font-semibold mb-2 flex items-center gap-x-2"><i class="fas fa-envelope text-amber-600"></i> <span data-i18n="comparison.email">E-mail para si mesmo</span></div>
+                <div class="text-sm text-slate-600" data-i18n="comparison.email.desc">Pode ser questionado quanto a autenticidade, integridade do anexo, controle da conta e força probatória isolada.</div>
+            </div>
+            <div class="bg-white border border-slate-200 p-6 rounded-3xl">
+                <div class="font-semibold mb-2 flex items-center gap-x-2"><i class="fas fa-clock text-amber-600"></i> <span data-i18n="comparison.timestamp">Timestamp Isolado</span></div>
+                <div class="text-sm text-slate-600" data-i18n="comparison.timestamp.desc">Demonstra existência em um momento, mas geralmente não oferece armazenamento seguro, gerenciamento de versões, confidencialidade configurável e múltiplas fontes.</div>
+            </div>
+            <div class="bg-white border border-slate-200 p-6 rounded-3xl">
+                <div class="font-semibold mb-2 flex items-center gap-x-2"><i class="fas fa-link text-amber-600"></i> <span data-i18n="comparison.blockchain">Blockchain Isolado</span></div>
+                <div class="text-sm text-slate-600" data-i18n="comparison.blockchain.desc">Registra o hash, mas não resolve identidade do autor, titularidade jurídica, preservação do arquivo original, confidencialidade e compreensão do comprovante pelo usuário comum.</div>
+            </div>
+        </div>
+        
+        <div class="mt-8 bg-emerald-50 border border-emerald-200 rounded-3xl p-7 text-sm">
+            <div class="font-semibold text-emerald-800" data-i18n="comparison.contribution">A contribuição do Certsigner:</div>
+            <div class="text-emerald-700 mt-1" data-i18n="comparison.contribution.desc">Oferecemos uma camada inicial de documentação acessível e verificável que complementa (e não substitui) patentes, direitos autorais e outros mecanismos formais. Reduz a janela de vulnerabilidade entre a criação e a proteção formal.</div>
+        </div>
+    </section>
+
+    <!-- FONTES DE VALIDAÇÃO -->
+    <section class="bg-slate-100 py-12 border-y">
+        <div class="max-w-5xl mx-auto px-6 text-center">
+            <div class="text-xs font-bold tracking-widest text-slate-500 mb-3" data-i18n="sources.eyebrow">FONTES DE VALIDAÇÃO MULTIPLAS</div>
+            <h3 class="font-semibold text-xl tracking-tight" data-i18n="sources.heading">Redundância é segurança</h3>
+            <p class="text-sm text-slate-600 mt-2 max-w-md mx-auto" data-i18n="sources.desc">O hash do seu conteúdo é ancorado em diversas fontes públicas reconhecidas internacionalmente, reduzindo drasticamente o risco de perda de verificabilidade.</p>
+            
+            <div class="mt-8 flex flex-wrap justify-center gap-x-6 gap-y-3 text-xs font-medium text-slate-500">
+                <div class="px-4 py-1.5 bg-white rounded-2xl border border-slate-200">WIPO Patentscope</div>
+                <div class="px-4 py-1.5 bg-white rounded-2xl border border-slate-200">EPO Espacenet</div>
+                <div class="px-4 py-1.5 bg-white rounded-2xl border border-slate-200">USPTO Patent Center</div>
+                <div class="px-4 py-1.5 bg-white rounded-2xl border border-slate-200">INPI Brasil</div>
+                <div class="px-4 py-1.5 bg-white rounded-2xl border border-slate-200">Google Patents</div>
+                <div class="px-4 py-1.5 bg-white rounded-2xl border border-slate-200">OpenTimestamps / Bitcoin</div>
+                <div class="px-4 py-1.5 bg-white rounded-2xl border border-slate-200">GitHub Public Commits</div>
+                <div class="px-4 py-1.5 bg-white rounded-2xl border border-slate-200" data-i18n="sources.other">Outras bases IP globais</div>
+            </div>
+            <p class="text-[10px] text-slate-400 mt-5" data-i18n="sources.footnote">A lista exata de fontes é atualizada continuamente para maximizar resiliência e reconhecimento jurídico.</p>
+        </div>
+    </section>
+
+    <!-- POSICIONAMENTO FINAL -->
+    <section class="max-w-4xl mx-auto px-6 py-16 text-center">
+        <div class="max-w-2xl mx-auto">
+            <div class="inline px-4 py-1 text-xs font-bold tracking-[1px] bg-[#1e40af] text-white rounded-full" data-i18n="positioning.badge">POSICIONAMENTO</div>
+            <h2 class="mt-6 text-4xl font-bold tracking-tighter" data-i18n="positioning.heading">Uma plataforma global, acessível e segura para registrar, preservar e recuperar evidências de ideias e criações desde o primeiro momento.</h2>
+            
+            <p class="mt-6 text-lg text-slate-600" data-i18n="positioning.desc">O <span class="brand-name font-semibold">Certsigner</span> permite que qualquer pessoa documente sua criação de maneira rápida, com liberdade para manter o conteúdo público, privado ou criptografado — protegendo não apenas o arquivo, mas a capacidade futura de demonstrar sua existência, integridade e evolução.</p>
+        </div>
+    </section>
+
+    <!-- CTA -->
+    <div class="bg-[#1e40af] py-14">
+        <div class="max-w-xl mx-auto px-6 text-center text-white">
+            <div class="text-sm opacity-75 tracking-widest" data-i18n="cta.eyebrow">PRONTO PARA PROTEGER SUAS IDEIAS?</div>
+            <div class="mt-3 text-3xl font-semibold tracking-tight" data-i18n="cta.heading">Comece a documentar suas criações hoje.</div>
+            
+            <div class="mt-8 flex flex-col sm:flex-row gap-4 justify-center">
+                <button onclick="document.getElementById('demo-section').scrollIntoView({behavior:'smooth'})" class="px-9 py-4 bg-white text-[#1e40af] font-semibold rounded-3xl hover:bg-slate-100 transition text-sm" data-i18n="cta.test">Testar o Gerador Agora</button>
+                <button onclick="alert('O painel completo e o app estarão disponíveis em breve. Deixe seu e-mail para early access (simulado).'); prompt('Seu e-mail para early access:')" class="px-9 py-4 border border-white/70 hover:bg-white/10 text-sm font-semibold rounded-3xl transition" data-i18n="cta.access">Solicitar Early Access</button>
+            </div>
+            <div class="mt-5 text-xs opacity-60" data-i18n="cta.footer">Sem cartão de crédito • Versão gratuita disponível • App completo em desenvolvimento</div>
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer class="bg-white border-t border-slate-100 py-10">
+        <div class="max-w-6xl mx-auto px-6 text-xs text-slate-500 flex flex-col md:flex-row md:items-center justify-between gap-y-4">
+            <div>
+                © <span class="brand-name">Certsigner</span> — <span class="brand-domain">certsigner.com</span>. <span data-i18n="footer.rights">Todos os direitos reservados.</span><br>
+                <span class="text-[10px]" data-i18n="footer.tagline">Uma ferramenta de documentação probatória complementar a patentes, direitos autorais e outros registros formais.</span>
+            </div>
+            <div class="flex gap-x-5 text-[10px]">
+                <a href="#" class="hover:text-slate-700" data-i18n="footer.terms">Termos</a>
+                <a href="#" class="hover:text-slate-700" data-i18n="footer.privacy">Privacidade</a>
+                <a href="#" class="hover:text-slate-700" data-i18n="footer.continuity">Continuidade Probatória</a>
+                <a href="https://www.lens.org/" target="_blank" class="hover:text-slate-700" data-i18n="footer.sources">Fontes de Validação</a>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>
