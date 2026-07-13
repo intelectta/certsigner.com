@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Certsigner — A forma mais humana e acessível de proteger suas ideias desde o primeiro dia. Evidências de prioridade para inventores, criadores e sonhadores.">
+    <title>Certsigner | Para quem cria com o coração</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&amp;family=Playfair+Display:wght@700&amp;display=swap');
+        
+        body {
+            font-family: 'Inter', system_ui, sans-serif;
+        }
+        
+        .warm-heading {
+            font-family: 'Playfair Display', Georgia, serif;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+        }
+
+        .section-header {
+            font-size: 2.35rem;
+            line-height: 1.05;
+        }
+
+        .creator-card {
+            transition: all .2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .creator-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 25px 50px -12px rgb(245 158 11 / 0.15);
+        }
+
+        .soft-shadow {
+            box-shadow: 0 10px 15px -3px rgb(245 158 11 / 0.08), 0 4px 6px -4px rgb(245 158 11 / 0.08);
+        }
+
+        .nav-warm {
+            background: #fffbeb;
+            border-bottom: 1px solid #fde68a;
+        }
+
+        .warm-accent {
+            color: #b45309;
+        }
+    </style>
+</head>
+<body class="bg-amber-50 text-amber-950">
+    <script>
+        const translations = {
+            pt: {
+                "nav.concept": "Nossa Ideia",
+                "nav.how": "Como Funciona",
+                "nav.who": "Para Quem",
+                "nav.differentials": "Por Que Somos Diferentes",
+                "nav.differentials.mobile": "Por Que Diferente",
+                "nav.test": "Testar Grátis",
+                "nav.signup": "Criar Conta",
+                "hero.eyebrow": "FEITO POR CRIADORES, PARA CRIADORES",
+                "hero.heading": "Sua ideia merece ser lembrada. Para sempre.",
+                "hero.subtitle": "Para inventores independentes, escritores, designers, pesquisadores e qualquer pessoa que cria. Gere evidências confiáveis da sua criação em minutos — sem advogados, sem taxas altas, sem burocracia.",
+                "hero.cta.demo": "Gerar minha primeira prova",
+                "hero.cta.who": "Ver quem já usa",
+                "hero.check1": "✓ Sem custo inicial",
+                "hero.check2": "✓ Funciona no celular",
+                "hero.check3": "✓ Privacidade total",
+                "concept.eyebrow": "NOSSA MISSÃO",
+                "concept.heading": "Toda criação importa. Todo criador tem direito a provas.",
+                "concept.mission": "Reduzir as injustiças no acesso à proteção de criações. Qualquer pessoa, independentemente de onde esteja ou quanto tenha, merece poder documentar seu processo criativo com dignidade e força probatória real.",
+                "how.eyebrow": "4 PASSOS • 5 MINUTOS",
+                "how.heading": "Proteger sua ideia nunca foi tão simples",
+                "how.step1.title": "Escreva ou envie",
+                "how.step1.desc": "Sua ideia, rascunho, desenho, código, texto... O que você criou.",
+                "how.step2.title": "Escolha seu nível",
+                "how.step2.desc": "Público (para mostrar), Privado (só você) ou Criptografado (futuro).",
+                "how.step3.title": "Nós cuidamos do resto",
+                "how.step3.desc": "Geramos o hash, registramos em várias fontes seguras e te entregamos o comprovante.",
+                "how.step4.title": "Durma tranquilo",
+                "how.step4.desc": "Monitoramos tudo. Se alguma fonte mudar, te avisamos antes de ser tarde.",
+                "demo.eyebrow": "EXPERIMENTE AGORA • SEM CADASTRO",
+                "demo.heading": "Qual é a sua ideia de hoje?",
+                "demo.placeholder": "Ex: Um método novo para organizar tarefas usando IA e calendário lunar...",
+                "demo.button": "Gerar Prova de Prioridade com Carinho",
+                "demo.loading": "Gerando sua prova com carinho...",
+                "demo.button_again": "Gerar Nova Prova para Outra Ideia",
+                "demo.alert_empty": "Escreva ou cole sua ideia aqui para gerar a prova ❤️",
+                "demo.result.eyebrow": "SUA PROVA FOI GERADA ❤️",
+                "demo.result.footer": "Hash registrado em múltiplas fontes • Válido por décadas • Monitoramento ativado",
+                "who.eyebrow": "FEITO PARA PESSOAS REAIS",
+                "who.heading": "Quem pode usar o Certsigner?",
+                "who.card1.title": "Inventores e makers",
+                "who.card1.desc": "Prototipagem, ideias de produtos, melhorias de processos. Registre cada versão antes de falar com investidores ou empresas.",
+                "who.card2.title": "Escritores e criadores de conteúdo",
+                "who.card2.desc": "Rascunhos de livros, roteiros, artigos, posts. Prove anterioridade de suas histórias e conceitos originais.",
+                "who.card3.title": "Designers e artistas",
+                "who.card3.desc": "Conceitos visuais, ilustrações, projetos de identidade. Documente o processo criativo completo.",
+                "who.card4.title": "Pesquisadores e acadêmicos",
+                "who.card4.desc": "Hipóteses, metodologias, dados preliminares. Fortaleça sua autoria antes da publicação formal.",
+                "who.card5.title": "Empreendedores solo",
+                "who.card5.desc": "MVPs, pitch decks, modelos de negócio. Tenha prova de quando tudo começou.",
+                "who.card6.title": "Qualquer pessoa com uma ideia",
+                "who.card6.desc": "Você não precisa ser expert em propriedade intelectual. Só precisa ter criado algo. Nós cuidamos do resto.",
+                "diff.eyebrow": "NOSSOS DIFERENCIAIS",
+                "diff.heading": "Não é só tecnologia. É respeito pelo criador.",
+                "diff.item1.title": "Acessível de qualquer lugar",
+                "diff.item1.desc": "Funciona no celular, tablet ou computador. Sem necessidade de escritório ou advogado.",
+                "diff.item2.title": "Preço justo e transparente",
+                "diff.item2.desc": "Comece grátis. Pague só quando precisar de mais provas ou armazenamento extra.",
+                "diff.item3.title": "Você decide o nível de sigilo",
+                "diff.item3.desc": "Do totalmente público ao criptografado com revelação futura. Total controle.",
+                "diff.item4.title": "Não te abandona no futuro",
+                "diff.item4.desc": "Monitoramos suas provas por você. Te avisamos se algo precisar ser renovado ou migrado.",
+                "injustice.eyebrow": "REDUZINDO DESIGUALDADES",
+                "injustice.heading": "A ausência de recursos não deve impedir você de provar seu trabalho.",
+                "injustice.desc": "Muita gente tem ideias brilhantes mas não tem dinheiro para patente, nem acesso a escritórios especializados, nem tempo para entender burocracia. Durante esse tempo, a ideia pode ser copiada ou perdida. O Certsigner fecha essa janela de vulnerabilidade com uma ferramenta simples, acessível e poderosa.",
+                "cta.eyebrow": "SUA IDEIA MERECE SER PROTEGIDA DESDE HOJE",
+                "cta.heading": "Comece agora. É simples. É humano. É seu.",
+                "cta.button": "GERAR MINHA PROVA AGORA",
+                "cta.subtext": "Grátis para começar • Privacidade total • Monitoramento vitalício",
+                "footer.tagline": "Uma ferramenta feita com carinho para quem cria com o coração.",
+                "footer.smallprint": "Complementa patentes, direitos autorais e registros formais. Não os substitui."
+            },
+            en: {
+                "nav.concept": "Our Idea",
+                "nav.how": "How It Works",
+                "nav.who": "Who It's For",
+                "nav.differentials": "Why We're Different",
+                "nav.differentials.mobile": "Why We're Different",
+                "nav.test": "Try for Free",
+                "nav.signup": "Create Account",
+                "hero.eyebrow": "MADE BY CREATORS, FOR CREATORS",
+                "hero.heading": "Your idea deserves to be remembered. Forever.",
+                "hero.subtitle": "For independent inventors, writers, designers, researchers and anyone who creates. Generate reliable evidence of your creation in minutes — no lawyers, no high fees, no bureaucracy.",
+                "hero.cta.demo": "Generate my first proof",
+                "hero.cta.who": "See who already uses it",
+                "hero.check1": "✓ No upfront cost",
+                "hero.check2": "✓ Works on mobile",
+                "hero.check3": "✓ Total privacy",
+                "concept.eyebrow": "OUR MISSION",
+                "concept.heading": "Every creation matters. Every creator deserves proof.",
+                "concept.mission": "Reduce the injustices in access to protection for creations. Anyone, regardless of where they are or how much they have, deserves to be able to document their creative process with dignity and real evidentiary strength.",
+                "how.eyebrow": "4 STEPS • 5 MINUTES",
+                "how.heading": "Protecting your idea has never been this simple",
+                "how.step1.title": "Write it or send it",
+                "how.step1.desc": "Your idea, draft, sketch, code, text... whatever you created.",
+                "how.step2.title": "Choose your level",
+                "how.step2.desc": "Public (to showcase), Private (only you) or Encrypted (future reveal).",
+                "how.step3.title": "We handle the rest",
+                "how.step3.desc": "We generate the hash, register it across multiple secure sources and hand you the certificate.",
+                "how.step4.title": "Sleep easy",
+                "how.step4.desc": "We monitor everything. If a source ever changes, we'll warn you before it's too late.",
+                "demo.eyebrow": "TRY IT NOW • NO SIGNUP",
+                "demo.heading": "What's your idea today?",
+                "demo.placeholder": "E.g.: A new method for organizing tasks using AI and a lunar calendar...",
+                "demo.button": "Generate a Priority Proof with Care",
+                "demo.loading": "Generating your proof with care...",
+                "demo.button_again": "Generate a New Proof for Another Idea",
+                "demo.alert_empty": "Write or paste your idea here to generate the proof ❤️",
+                "demo.result.eyebrow": "YOUR PROOF HAS BEEN GENERATED ❤️",
+                "demo.result.footer": "Hash registered across multiple sources • Valid for decades • Monitoring activated",
+                "who.eyebrow": "MADE FOR REAL PEOPLE",
+                "who.heading": "Who can use Certsigner?",
+                "who.card1.title": "Inventors and makers",
+                "who.card1.desc": "Prototyping, product ideas, process improvements. Record every version before talking to investors or companies.",
+                "who.card2.title": "Writers and content creators",
+                "who.card2.desc": "Book drafts, scripts, articles, posts. Prove the priority of your original stories and concepts.",
+                "who.card3.title": "Designers and artists",
+                "who.card3.desc": "Visual concepts, illustrations, identity projects. Document your entire creative process.",
+                "who.card4.title": "Researchers and academics",
+                "who.card4.desc": "Hypotheses, methodologies, preliminary data. Strengthen your authorship before formal publication.",
+                "who.card5.title": "Solo entrepreneurs",
+                "who.card5.desc": "MVPs, pitch decks, business models. Have proof of when it all began.",
+                "who.card6.title": "Anyone with an idea",
+                "who.card6.desc": "You don't need to be an intellectual property expert. You just need to have created something. We handle the rest.",
+                "diff.eyebrow": "OUR DIFFERENTIALS",
+                "diff.heading": "It's not just technology. It's respect for the creator.",
+                "diff.item1.title": "Accessible from anywhere",
+                "diff.item1.desc": "Works on mobile, tablet or computer. No need for an office or a lawyer.",
+                "diff.item2.title": "Fair, transparent pricing",
+                "diff.item2.desc": "Start for free. Only pay when you need more proofs or extra storage.",
+                "diff.item3.title": "You decide the level of secrecy",
+                "diff.item3.desc": "From fully public to encrypted with a future reveal. Total control.",
+                "diff.item4.title": "Won't abandon you down the road",
+                "diff.item4.desc": "We monitor your proofs for you. We'll let you know if anything needs renewal or migration.",
+                "injustice.eyebrow": "REDUCING INEQUALITY",
+                "injustice.heading": "Lack of resources shouldn't stop you from proving your work.",
+                "injustice.desc": "A lot of people have brilliant ideas but no money for a patent, no access to specialized law firms, and no time to understand bureaucracy. During that time, the idea can be copied or lost. Certsigner closes that window of vulnerability with a simple, accessible and powerful tool.",
+                "cta.eyebrow": "YOUR IDEA DESERVES TO BE PROTECTED STARTING TODAY",
+                "cta.heading": "Start now. It's simple. It's human. It's yours.",
+                "cta.button": "GENERATE MY PROOF NOW",
+                "cta.subtext": "Free to start • Total privacy • Lifetime monitoring",
+                "footer.tagline": "A tool made with care for those who create from the heart.",
+                "footer.smallprint": "Complements patents, copyrights and formal registrations. Does not replace them."
+            },
+            es: {
+                "nav.concept": "Nuestra Idea",
+                "nav.how": "Cómo Funciona",
+                "nav.who": "Para Quién",
+                "nav.differentials": "Por Qué Somos Diferentes",
+                "nav.differentials.mobile": "Por Qué Diferentes",
+                "nav.test": "Probar Gratis",
+                "nav.signup": "Crear Cuenta",
+                "hero.eyebrow": "HECHO POR CREADORES, PARA CREADORES",
+                "hero.heading": "Tu idea merece ser recordada. Para siempre.",
+                "hero.subtitle": "Para inventores independientes, escritores, diseñadores, investigadores y cualquier persona que crea. Genera evidencia confiable de tu creación en minutos — sin abogados, sin tarifas altas, sin burocracia.",
+                "hero.cta.demo": "Generar mi primera prueba",
+                "hero.cta.who": "Ver quién ya lo usa",
+                "hero.check1": "✓ Sin costo inicial",
+                "hero.check2": "✓ Funciona en el celular",
+                "hero.check3": "✓ Privacidad total",
+                "concept.eyebrow": "NUESTRA MISIÓN",
+                "concept.heading": "Toda creación importa. Todo creador tiene derecho a pruebas.",
+                "concept.mission": "Reducir las injusticias en el acceso a la protección de creaciones. Cualquier persona, sin importar dónde esté o cuánto tenga, merece poder documentar su proceso creativo con dignidad y fuerza probatoria real.",
+                "how.eyebrow": "4 PASOS • 5 MINUTOS",
+                "how.heading": "Proteger tu idea nunca fue tan simple",
+                "how.step1.title": "Escribe o envía",
+                "how.step1.desc": "Tu idea, borrador, dibujo, código, texto... lo que hayas creado.",
+                "how.step2.title": "Elige tu nivel",
+                "how.step2.desc": "Público (para mostrar), Privado (solo tú) o Encriptado (revelación futura).",
+                "how.step3.title": "Nosotros nos encargamos del resto",
+                "how.step3.desc": "Generamos el hash, lo registramos en varias fuentes seguras y te entregamos el comprobante.",
+                "how.step4.title": "Duerme tranquilo",
+                "how.step4.desc": "Monitoreamos todo. Si alguna fuente cambia, te avisamos antes de que sea tarde.",
+                "demo.eyebrow": "PRUÉBALO AHORA • SIN REGISTRO",
+                "demo.heading": "¿Cuál es tu idea hoy?",
+                "demo.placeholder": "Ej: Un método nuevo para organizar tareas usando IA y calendario lunar...",
+                "demo.button": "Generar Prueba de Prioridad con Cariño",
+                "demo.loading": "Generando tu prueba con cariño...",
+                "demo.button_again": "Generar Nueva Prueba para Otra Idea",
+                "demo.alert_empty": "Escribe o pega tu idea aquí para generar la prueba ❤️",
+                "demo.result.eyebrow": "TU PRUEBA FUE GENERADA ❤️",
+                "demo.result.footer": "Hash registrado en múltiples fuentes • Válido por décadas • Monitoreo activado",
+                "who.eyebrow": "HECHO PARA PERSONAS REALES",
+                "who.heading": "¿Quién puede usar Certsigner?",
+                "who.card1.title": "Inventores y makers",
+                "who.card1.desc": "Prototipado, ideas de productos, mejoras de procesos. Registra cada versión antes de hablar con inversores o empresas.",
+                "who.card2.title": "Escritores y creadores de contenido",
+                "who.card2.desc": "Borradores de libros, guiones, artículos, publicaciones. Demuestra la prioridad de tus historias y conceptos originales.",
+                "who.card3.title": "Diseñadores y artistas",
+                "who.card3.desc": "Conceptos visuales, ilustraciones, proyectos de identidad. Documenta todo el proceso creativo.",
+                "who.card4.title": "Investigadores y académicos",
+                "who.card4.desc": "Hipótesis, metodologías, datos preliminares. Refuerza tu autoría antes de la publicación formal.",
+                "who.card5.title": "Emprendedores individuales",
+                "who.card5.desc": "MVPs, pitch decks, modelos de negocio. Ten prueba de cuándo empezó todo.",
+                "who.card6.title": "Cualquier persona con una idea",
+                "who.card6.desc": "No necesitas ser experto en propiedad intelectual. Solo necesitas haber creado algo. Nosotros nos encargamos del resto.",
+                "diff.eyebrow": "NUESTROS DIFERENCIALES",
+                "diff.heading": "No es solo tecnología. Es respeto por el creador.",
+                "diff.item1.title": "Accesible desde cualquier lugar",
+                "diff.item1.desc": "Funciona en celular, tablet o computadora. Sin necesidad de oficina ni abogado.",
+                "diff.item2.title": "Precio justo y transparente",
+                "diff.item2.desc": "Empieza gratis. Paga solo cuando necesites más pruebas o almacenamiento extra.",
+                "diff.item3.title": "Tú decides el nivel de confidencialidad",
+                "diff.item3.desc": "Desde totalmente público hasta encriptado con revelación futura. Control total.",
+                "diff.item4.title": "No te abandona en el futuro",
+                "diff.item4.desc": "Monitoreamos tus pruebas por ti. Te avisamos si algo necesita renovarse o migrarse.",
+                "injustice.eyebrow": "REDUCIENDO DESIGUALDADES",
+                "injustice.heading": "La falta de recursos no debe impedirte demostrar tu trabajo.",
+                "injustice.desc": "Mucha gente tiene ideas brillantes pero no tiene dinero para una patente, ni acceso a despachos especializados, ni tiempo para entender la burocracia. Durante ese tiempo, la idea puede ser copiada o perdida. Certsigner cierra esa ventana de vulnerabilidad con una herramienta simple, accesible y poderosa.",
+                "cta.eyebrow": "TU IDEA MERECE SER PROTEGIDA DESDE HOY",
+                "cta.heading": "Empieza ahora. Es simple. Es humano. Es tuyo.",
+                "cta.button": "GENERAR MI PRUEBA AHORA",
+                "cta.subtext": "Gratis para empezar • Privacidad total • Monitoreo de por vida",
+                "footer.tagline": "Una herramienta hecha con cariño para quienes crean con el corazón.",
+                "footer.smallprint": "Complementa patentes, derechos de autor y registros formales. No los sustituye."
+            },
+            zh: {
+                "nav.concept": "我们的理念",
+                "nav.how": "工作原理",
+                "nav.who": "适合谁",
+                "nav.differentials": "我们的不同之处",
+                "nav.differentials.mobile": "我们的不同之处",
+                "nav.test": "免费试用",
+                "nav.signup": "创建账户",
+                "hero.eyebrow": "由创作者打造，为创作者服务",
+                "hero.heading": "您的创意值得被永远铭记。",
+                "hero.subtitle": "适合独立发明家、作家、设计师、研究人员以及任何有创作的人。在几分钟内生成您创作的可靠证据——无需律师、无高额费用、无繁琐手续。",
+                "hero.cta.demo": "生成我的第一份证明",
+                "hero.cta.who": "看看谁已经在使用",
+                "hero.check1": "✓ 无需前期费用",
+                "hero.check2": "✓ 支持手机使用",
+                "hero.check3": "✓ 完全隐私保护",
+                "concept.eyebrow": "我们的使命",
+                "concept.heading": "每一份创作都很重要。每一位创作者都值得拥有证明。",
+                "concept.mission": "减少在创作保护获取方面的不公平。无论身处何地、拥有多少资源，每个人都应该有尊严地记录自己的创作过程，并获得真正的证明力。",
+                "how.eyebrow": "4 个步骤 • 5 分钟",
+                "how.heading": "保护您的创意从未如此简单",
+                "how.step1.title": "写下或提交",
+                "how.step1.desc": "您的想法、草稿、草图、代码、文字……任何您创作的内容。",
+                "how.step2.title": "选择您的级别",
+                "how.step2.desc": "公开（用于展示）、私有（仅限您本人）或加密（未来披露）。",
+                "how.step3.title": "剩下的交给我们",
+                "how.step3.desc": "我们生成哈希值，注册到多个安全来源，并将凭证交给您。",
+                "how.step4.title": "安心无忧",
+                "how.step4.desc": "我们持续监控一切。如果任何来源发生变化，我们会在为时已晚之前提醒您。",
+                "demo.eyebrow": "立即体验 • 无需注册",
+                "demo.heading": "您今天有什么创意？",
+                "demo.placeholder": "例如：一种使用 AI 和农历来组织任务的新方法……",
+                "demo.button": "用心生成优先权证明",
+                "demo.loading": "正在用心生成您的证明……",
+                "demo.button_again": "为另一个创意生成新证明",
+                "demo.alert_empty": "请在此写下或粘贴您的创意以生成证明 ❤️",
+                "demo.result.eyebrow": "您的证明已生成 ❤️",
+                "demo.result.footer": "哈希值已注册到多个来源 • 有效期数十年 • 监控已启动",
+                "who.eyebrow": "为真实的人而打造",
+                "who.heading": "谁可以使用 Certsigner？",
+                "who.card1.title": "发明家和创客",
+                "who.card1.desc": "原型设计、产品创意、流程改进。在与投资者或企业沟通之前记录每个版本。",
+                "who.card2.title": "作家和内容创作者",
+                "who.card2.desc": "书籍草稿、剧本、文章、帖子。证明您原创故事和构思的优先权。",
+                "who.card3.title": "设计师和艺术家",
+                "who.card3.desc": "视觉概念、插画、品牌形象项目。记录完整的创作过程。",
+                "who.card4.title": "研究人员和学者",
+                "who.card4.desc": "假设、方法论、初步数据。在正式发表前加强您的作者身份证明。",
+                "who.card5.title": "独立创业者",
+                "who.card5.desc": "MVP、路演文稿、商业模式。留下一切开始的证明。",
+                "who.card6.title": "任何有创意的人",
+                "who.card6.desc": "您不需要成为知识产权专家。您只需要创作了些什么。剩下的交给我们。",
+                "diff.eyebrow": "我们的差异化优势",
+                "diff.heading": "这不仅仅是技术，更是对创作者的尊重。",
+                "diff.item1.title": "随时随地都可使用",
+                "diff.item1.desc": "支持手机、平板或电脑使用。无需办公室或律师。",
+                "diff.item2.title": "价格公道透明",
+                "diff.item2.desc": "免费开始使用。只有在需要更多证明或额外存储空间时才付费。",
+                "diff.item3.title": "由您决定保密级别",
+                "diff.item3.desc": "从完全公开到加密并延后披露，完全由您掌控。",
+                "diff.item4.title": "未来也不会弃您不顾",
+                "diff.item4.desc": "我们为您持续监控证明。如有需要续期或迁移的情况，我们会及时通知您。",
+                "injustice.eyebrow": "减少不平等",
+                "injustice.heading": "资源匮乏不应阻止您证明自己的成果。",
+                "injustice.desc": "许多人拥有出色的创意，却没有钱申请专利，也无法接触专业律所，更没有时间去理解繁琐的手续。在此期间，创意可能被抄袭或遗失。Certsigner 用一个简单、易用且强大的工具，弥补了这段脆弱期。",
+                "cta.eyebrow": "您的创意值得从今天起就受到保护",
+                "cta.heading": "现在就开始。简单。人性化。属于您。",
+                "cta.button": "立即生成我的证明",
+                "cta.subtext": "免费开始 • 完全隐私 • 终身监控",
+                "footer.tagline": "一款用心打造的工具，献给用心创作的人。",
+                "footer.smallprint": "补充专利、著作权和正式登记，而非取代它们。"
+            }
+        };
+
+        const CONFIG = {
+            brandName: "Certsigner",
+            domain: "certsigner.com",
+            tagline: "A forma mais humana de provar que sua ideia existia primeiro",
+            heroSubtitle: "Para inventores independentes, escritores, designers, pesquisadores e qualquer pessoa que cria. Gere evidências confiáveis da sua criação em minutos — sem advogados, sem taxas altas, sem burocracia.",
+            mission: "Reduzir as injustiças no acesso à proteção de criações. Qualquer pessoa, independentemente de onde esteja ou quanto tenha, merece poder documentar seu processo criativo com dignidade e força probatória real.",
+            primaryWarm: "#b45309"
+        };
+
+        // ==================== MULTILINGUAL SUPPORT ====================
+        let currentLang = 'pt';
+
+        function switchLanguage(lang) {
+            currentLang = lang;
+            const selector = document.getElementById('lang-selector');
+            const selectorMobile = document.getElementById('lang-selector-mobile');
+            if (selector) selector.value = lang;
+            if (selectorMobile) selectorMobile.value = lang;
+
+            const elements = document.querySelectorAll('[data-i18n]');
+            elements.forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (translations[lang] && translations[lang][key]) {
+                    el.textContent = translations[lang][key];
+                }
+            });
+
+            const placeholderElements = document.querySelectorAll('[data-i18n-placeholder]');
+            placeholderElements.forEach(el => {
+                const key = el.getAttribute('data-i18n-placeholder');
+                if (translations[lang] && translations[lang][key]) {
+                    el.setAttribute('placeholder', translations[lang][key]);
+                }
+            });
+
+            // Language-aware dynamic fields normally set by applyBranding()
+            const hero = document.getElementById('hero-subtitle');
+            if (hero && translations[lang] && translations[lang]['hero.subtitle']) {
+                hero.textContent = translations[lang]['hero.subtitle'];
+            }
+            const mission = document.getElementById('mission-text');
+            if (mission && translations[lang] && translations[lang]['concept.mission']) {
+                mission.textContent = translations[lang]['concept.mission'];
+            }
+
+            localStorage.setItem('certsigner-lang', lang);
+        }
+
+        function initLanguage() {
+            const selector = document.getElementById('lang-selector');
+            const selectorMobile = document.getElementById('lang-selector-mobile');
+            const savedLang = localStorage.getItem('certsigner-lang') || 'pt';
+            if (selector) selector.value = savedLang;
+            if (selectorMobile) selectorMobile.value = savedLang;
+            if (selector || selectorMobile) {
+                setTimeout(() => switchLanguage(savedLang), 100);
+            }
+        }
+
+        function applyBranding() {
+            document.title = `${CONFIG.brandName} • ${CONFIG.tagline}`;
+            document.querySelectorAll('.brand-name').forEach(el => el.textContent = CONFIG.brandName);
+            const tag = document.getElementById('dynamic-tagline');
+            if (tag) tag.textContent = CONFIG.tagline;
+            const hero = document.getElementById('hero-subtitle');
+            if (hero) hero.textContent = CONFIG.heroSubtitle;
+            const mission = document.getElementById('mission-text');
+            if (mission) mission.innerHTML = CONFIG.mission;
+            document.querySelectorAll('.brand-domain').forEach(el => el.textContent = CONFIG.domain);
+        }
+
+        function generateWarmHash() {
+            const input = document.getElementById('warm-input').value.trim();
+            if (!input) { alert(translations[currentLang]['demo.alert_empty'] || 'Escreva ou cole sua ideia aqui para gerar a prova ❤️'); return; }
+            
+            const btn = document.getElementById('warm-btn');
+            const result = document.getElementById('warm-result');
+            const hashEl = document.getElementById('warm-hash');
+            
+            btn.disabled = true;
+            btn.innerHTML = translations[currentLang]['demo.loading'] || 'Gerando sua prova com carinho...';
+            
+            setTimeout(async () => {
+                let hash = '';
+                try {
+                    const data = new TextEncoder().encode(input + Date.now());
+                    const buf = await crypto.subtle.digest('SHA-256', data);
+                    hash = Array.from(new Uint8Array(buf)).map(x => x.toString(16).padStart(2,'0')).join('');
+                } catch {
+                    hash = (input.length * 987654321).toString(16).padEnd(64, 'a').slice(0,64);
+                }
+                
+                hashEl.textContent = hash;
+                result.classList.remove('hidden');
+                result.classList.add('animate-pulse');
+                setTimeout(() => result.classList.remove('animate-pulse'), 1200);
+                
+                btn.disabled = false;
+                btn.innerHTML = `<i class="fas fa-heart mr-2"></i> ${translations[currentLang]['demo.button_again'] || 'Gerar Nova Prova para Outra Ideia'}`;
+            }, 780);
+        }
+        
+        function initWarmSite() {
+            applyBranding();
+            initLanguage();
+            
+            // Mobile nav
+            const mBtn = document.getElementById('warm-mobile-btn');
+            const mMenu = document.getElementById('warm-mobile-menu');
+            if (mBtn && mMenu) {
+                mBtn.onclick = () => {
+                    mMenu.classList.toggle('hidden');
+                    const i = mBtn.querySelector('i');
+                    i.classList.toggle('fa-bars'); i.classList.toggle('fa-times');
+                };
+            }
+            
+            // Smooth scroll
+            document.querySelectorAll('a[href^="#"]').forEach(link => {
+                link.addEventListener('click', function(e) {
+                    const target = document.querySelector(this.getAttribute('href'));
+                    if (target) {
+                        e.preventDefault();
+                        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                        if (mMenu) mMenu.classList.add('hidden');
+                    }
+                });
+            });
+            
+            console.log('%c[Certsigner Site 3] Versão Humana e Acolhedora carregada com sucesso.', 'color:#b45309');
+        }
+        
+        window.onload = initWarmSite;
+    </script>
+
+    <!-- NAV WARM -->
+    <nav class="nav-warm sticky top-0 z-50">
+        <div class="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
+            <div class="flex items-center gap-x-3">
+                <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAToAAABpCAYAAACqL++xAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAASdEVYdFNvZnR3YXJlAEdyZWVuc2hvdF5VCAUAAEKKSURBVHhe7X2HYxTFF//v3/j9NOVydyn03kERAZViQRQVVMQCKGAFRUUhTRGxVxAUBUX9WhBQFKQkJCQUARtFuoBK7yWB93ufNzObuc1e7kJCEuM++OTudndm3sy8+eyb2ZnZ/0O++OKLL/VIjhw5Ug4+0fniiy/1Snyi88UXX+q9+ETniy++1Hvxic4XX3yp9+ITnS+++FLvxSc6X3zxpd6LT3S++OJLvRef6HzxxZd6Lz7R+eKLL/VefKLzxRdf6r34ROeLL77Ue/GJzhdffKn34hOdL774Uu/FJzpffPGl3otPdL744ku9F5/ofPHFl3ovPtH54osv9V58ovPFF1/qvfhE54svvtR78YnOF198qffiE50vvvhS78UnOl988aXei090vvjiS70Xn+h88cWXei8+0fniiy/1Xnyi88UXX+q9+ETniy++1Hups0R33oL8OafhnFBf1D/ruC+++OKLS+os0RleE25jAjvPXxTO0zlGKT75RAmjFOdLzynwcZ/wfPHFF1vqHtGBpJi8QGLnmNlK+cBhZrL1fx+hz9buoMyFG+mROT/TgPcKaMDUAhr26S+UuWALLduwj/44cJpOgAQ57HmGic4XX3z5b0udJLrz586xp3aONh86Sq8u3kR9p6+nBhOXUzBrKQWyllEgM5+COUWUklXIv5fz72UUnLCEGk8soKGzf6LFW/fRGY4DZKc7tr744st/WOoM0Ykjp//tOVFC4+dtpOZMbukT8ik8gcktK5+JjUmNP0FuKdlMdIJCOZ6SzUTICPH50IQ8euyz9bSd42G6c/754osv/02pU0R3iv8W7NhPXd9YzeRVxB7cCgpmFlIIYDILgtAEIDcbiugCWQXyO8AIji+mG19fTsv/PESG7nzxxZf/ptQJokMXs6S0lN7L30QNcpmsxFMrZtJiogNpCUBiBm6iizwHogtkrqLQ+FXUedJSWrbroBqz0+N2vvjiy8UXM04ej8gw00VsnzVCdEJkJSV0+tTpMpw+Lcdw7sy58zRl8S5qjHG33FWUkrOSggwQHkgOxJXMXdRk/b080bnAHmAgs4ivX8Hh8qjP29/TjiNn5Kms79j54kvNyDmMtXMbjwe41pAdYMKePXuWzpw5UyFK2UmKJReN6KDo33//TV999RWNHj2aevToQa1bt3bQpk0b6tOnD417djxlz/uZ0jMxxsZeHAgORJcdSXRJIDpNdp7k5gFcm5iznMI5S+iR2eu50JjoMP3EF1/+5WIIoS7L+vXrqXevXnR1j54OrmL07BmJ3r1708qVK5384HPDhg109dVXC2+4r3dj8eLFEq4iqVaiM4W/fft2GvvEE9S6RUsKBVIoKSGBkhMTKZCUTCn8O5TC4M/kcBpl3PI0pbH3FcpEV5VJLXtFGTRhiUenP+Py6DQkXDZ3Z5kw03OL6dsN+6hU3zl88aVOCZskZhuUlpQKTp08RQf2H6B9f/8jOHL4MJWcZe+HUcoomzMKqPB1rbdSsLyAgtzOg8kBCiWVIYV/28A1i35YWDYHlrF2zU/lrrMh8TLwfc7XX6sEK5BqJTq4kP/7/HNq06o1K8CkBoUYgaSkMqLj3yC5UEqQgj3upLTxeNiwmj23YiYm7mpqgnKTmhfBua+JCibNIOPm91fTSRiIGEcdswoW6LVz504qLCykohUrGEW0gj8FhRrmt4Xi4mLau2evT+D/MkGv59SpU/Trz7/QrI9mUib3bm4bcAv17N6DunTsRK2at6CWGm1bt6FuXbtS72uuoTsH3U7ZEzLpi8//R7//+hudPHFS27SOuI6IEF0yt/VEbvMaQRCdBr4LmBPcRPcTiE7zhQPrekWgikTnfMVEFyPv1UZ0GHMbP368EFiIFUhJTFIZ0koakgPCAf5s3ZMyxn5PYSa4IHdJA7nK+8KT01jkFc7MZ3LMo0T21ECMydnLGfmMPPlMwRQT7gqHMgsE8OgCWWuoyfjF9Mvuw0LI588x6iAx3MFGHOYyTNUwdy5zVzRliJtFGBXNnynsIQ8fPjyusQpfaldgc2hk3333HY0aOZLatWlD6aFUadQBdgaSE+AQcNvR9ewFnDd2kRoKcxxt6fHRY2jZsmUyrlVXxE10Dh9ownK8PD626PsfHJLzJLpyYTheRpi/f2OIroLm7CY5oNJEh8LNzs6mALw4Vi6VE4cCUEgaolGWgQabmN6CMoa9T2H25lIyuYuaw+SWW0BJOWVTRMzTVjfJCZgQw5lLKfTEfEob9QGl3PcGhW4fTym3jVMY+Cwl3/4yH59KgQdmUMbjc6jJUwup0bg8yp37uzzhxTKyurRcDA0AY5pNGzdhg09iw0h2jEMqmL+HjbHo3+Z8gMu0ebPm9M8//+jYfKlrgvrds2cPvfzyy9SpUycK8s0JbQM3rDRusKlJ/BtkxyRmOwVu4Jx9Hu3JfE9PT6cDBw7oFGtfbKKDDcNOAdt+BfzbTXRrVq+RYS4nn3YY/o6bfJjLDG1i7pdMdLJWFKl6S5WJDu73Jx9/Ip6c3Gm4EhzWZUBBhWRWTiH1+lGUyt3UlEx4WkxsOUxe7NEF8IluJp8LYWoJPDwmwSB7aK0mLqPmYz+n0IBnKXTFrXRJ8y6UkNGEDSaoGz8bSiJ7kwlhCieEOO0Q6xOipOQQJaakUiC9JaU070bd+t1FH374EW3bup1KzqixDrbCiEKuDUFDmDdvHiXrbn5QE50pP3d5mkrHdxgCjH8+h6+LXup/VVAXaB+HDx+mN994k1q1aCnOQESDZ8ApcByDSgCekPJs+Dej9zW96OyZszr12hcQnZAV62puyI7ubLsgKUNchuikKTJWrV4tPRUhOiuMuT6C6C62R4eK3LFjB7Vs3lzcbjfJ2YCiqclJlNj8Cmrw5Fzx5OQpKnc7U3KY9BwUUQhPW8cXUEbWYho4cyV9uHIb7Tl+ln7etIsmvvgadenQngIpcN+ZNJFhziwauioMJjsBCjKJCyOR00/g3ziPQk/hAg9S4waN6ZYbB9CMae/LYC8Ggmub6MaMGcMkx3d0hhCdVX7RYAwHnvS4p56OJG5falVAcoUFhXTN1Vc7NyPjoTiNt4qQBs+A5/TsuGdUL6WOSEFBJNGp9ukBLg+H6DgcsNIiOq9yMvnGd6frWoFUiejOcaN65KGHKZCQSCnGC3EpVJYhuOYNKfneVykZDx4wz409OHhsILggkxu8uFDucmr+wnJ69OuNVLz3GB0tKaWz57iryWmd4+8lpefp0JGjNPPjj6hv396UFmIPTiqaC0QMKMjpwF2GR8QepP5MQZeAiRZwvgeYULgw8fDklZdepmMcrxBeLQjmA3Xs0EEqNV6Ss4G8X3H55XTi2HGuGG0xvtSK4KaFMesPpr/PN9SG3DZgf6qxG6KrDpIDTIPHzXHeN3NrzX69xCY6m+SMJ4djpkwW/VDeo0PbjEV0OHfRH0bs2rlTKjJwKZMck52Qi0shQziSwU63UvqEpfKEFV6brIBgsgsy0eF3mxeKKOu7TfT730fp1LkS9dCghD/5O/8V4B9TnjKmM6do2dJlNPDW2yg1hburnHEQnSpYjHMB/J1JVpEcEzIjyF4evicH+JPJDt0JdL379u5D69etk7hrWtZwxcrYnFNuVhnGARBdWjiVVq9cpcceaz4PvigByT3zzDPyoEAapFVHDtEx3HV4ITANvnFGQ/qT22Nt2G40MUTnJjlDdNKFx4NJhiE6gzWrmOj0GF2tEh3c8tdeeVUGU+HRBRP0ALpbIW68qQnJlBhgT2vEdApNwPgbuqcrKPG5AkrOzKcmmcto1JebacM+5VGhoeKpKJ07C7dRb9ekICRn/+OKhS6LF/1IN/W7kckCg7UoHOii9EFhqLERjCGCTCyvTo6rLgW6FngY8P13C5TB1JDRIK3ncnJFBxlzQdnBGPAZJ9BwYBgTn3vemWNVl4z+vyIgOcwhxVirITOv8Te77ioCvHtxJPjT8Qo1pM7R2BnX9LyKmwq3mTpU5eZhRFATm012/xqiKzl7VmY5y7gDKtWD5AScofRLkyixU18mNexCUkBh7qKmctc1+Fwh9Z+6lgq2H9HbKp1BzKy0NV6mYb5GEzRqdP8+m/0pdb3sMhnrMkYlhiFk5iY6l/FosmiQlk4ffTCjxgwHy1z6XXe9pC1PqXQDsdE4vQG1atq83HEDaVQcvtdVV9MZbmw1RdK+lAluuJNemKTbhB4zjhNoP0CY67BF46bUo2s3uvO2QTT07ntp1PAH6L4hd1O/62+gju3aUwbbpxnvE5thTHjm2Tp3YwPRyY1bE5uUh/4O/CuIbvefu0URZ4DVpYiBUpK9unteoktzMUcOY3HF1HlSPs0o3ElHTqtuqDRMtYWw/Ebv60KGmhD22LFjlDVhAjVIz1C6WTCFZsjNFD4+DdkhTwirxjwqq0HlZevWrWK8xmi9ujV33DqQHh45qtxxA0N0DVnvPzb/wXrXnbGa/4KA5ObPmy83SdhSRQ/mbBhyu7LrFZSbnUOF+cvp6KHDdPb0GbnRwp4NMJSDm9g/f/8jvY5nnh5H3btdSanBEC2Y/61cU5fE8eiQT4bDEf8WokOBInKMazkk4lLEAHe2Sxu1pIxxP1CYu6upOd/ToFm/06ZDp2U79Ag2w1dUKH81iKF/VMEymaLCFXRt7z566gu6tGV3WZvkDAzRKbJLombcjcXY2cUU5HfmRx8JUZluiBfRvfLiZPrqf184Few+b4gO5T39vWk1QtC+KEEdYo5c+7btxIPBtAfHrlz1ZAOT6q/ochl99slsOnr0qCxPBGGqoYdzVMo3fWxAC+C7c84MTfDvk8dPyLjs4YOH6h7RxXjqKkTHQHurs0SXm5PDSmhvDnApYoAHAel9h1Ba5nJqMXEZTVu+iQ6fKaESriiMvTlEpxXFBwgO/ggQQ//oouM8cvgIZbJ3Fw6FVKFCJ4YpfLvgzTGQhvnsddU14iFeLIHx3jX4LknLi+CgK7yD5Xn5tHPHTmqYluE5TGCIDp8Db7lVnlJzRelULkxQz274Ul7gaWFcDu0Aww5yIzJ25aonqSuuP6x6eWjESPpnz18OcanXB3AZg8T0d7xKAMB3qQO0lyioa/XjJjq7rQFynMsLqLNE9+gjj5R1WwGXIgaBQBpl3P8mXf/aMlr1xyE6re9UXLXyTxTUMF+F4MyPahCMgWEXleaY7wedWS+jtxRiFIMEUJgzP/zoohnRvn37qEXzFp6GgPRlpUk4TIcOHpQxyKu795CG4kV20sD4s0XTZvTPX3+rBlAFkYblQjQx59HdOst6Hjp0SGbp40aDSazijVQQvtKCqAwqEEmXgcXwJ0+epP379wuOHzsuBFUdemGXDgwZwJ4conPVjY20lBBNzMnlbugZFJwiqSh1haNoD9UpTl2hLZao7vBBti+srNnHwI29OsrGJjq3bdvOBsqtThOdIQuBSxEAjTGtYQsaPzuPdh87RadZGXhy8vIaiUgBZQkYD84QHVAdYip186bN1OPybhRIxBQUPZjrobcNzIG6rHMXOnH8uFKuGgV6zf3mm7IutcsYkD68uev69hWDRIN95qlx5XQ0MJWPxjZ3zjdRG49boMeWLVuoqKgoAu7NA0DKtuHjOwACxkYEOdnZsij9yiu6UcuWLal5s2bUgbtzmLE/atQomjNnjqwSMOFiCZYWrlq1SuJ2YwVQgM0PiuRJpy2mgYJs534zl8aOeVyGMDp36kxNmzSh5k2bUqf2HajfDTfI+mw0SNwM49XLCK5FWsibGltV3VbpunrUD+oY1z2f+5wQL0eg4tCoZvOKEJM36IuNI2bNmkWPjxkjMxW6Xd6VWrZoQU24bJo1UWXTq1cvGjJkCL3xxhu0bt06qWMTR7xiE105+9ZlIuXC9mqIDtEDq+vCPDpkNl6iG3TbQDrDRgTyknE3U1hQTAPnDMmZ36b7KseqSZDsrp27qU3X/kxganzRqxBtgGiCgQB98/UcFUE1Cu6ao7j7It6ZNgBzl7N1yB4/QUgL+G7e/IhzNlDxqQFF4ogXxBiPYeKaoUOHqvWXFjBIbJCUlERTp06Vaw1OnDhBH3zwAV122WXKBvQ8QCFbNnDn6TH/FoPnOEGAkydPFhKKpRtIsXWrVmqGvAXohvgxiJ8eCtOObdvleqMXGvJTTz1FTbBuGFOfWAesoDHjn1KnrKssnoeeoZDsffa///3PIbx4BQ+S0tLSJP/IL9aspoHsvBo01/PgwYPp5OlTKg3+j3uRGY+GvVe3mDI5eOAgzeC6uv766yk1NVWWGcoGAhr4jvqDjiBqqS+NYDBIPbp3pzdef0PWY8fr6TlEB9vg/DuE50IE0XE4lEPxmvhWRlx0ohv92GMVdl2hACDzutyFYnKDTwa+OqRm/XaOVZNADRDtfVMWUrBDL0qWQqz46RjygHwOu29o3B5SvILC7tCuvVR0NKJDZf7w7QKH6NAlbdmkWYSO9rVCMoyWzZrTUaz0QKahdgWq45phQ4cpo7JgdDF46sknHSP/7bff6EbMW2QSTObyEa+UG4pMCOVr4bmogXk0fhUfrgFhJicn05XdrqRi9holX7aORk/+RLe3dctWShdOxzyhA3BM0uGG+cOC7+V66PbVl19Su7ZtpYHJHEndeFNZL5MvU9aoW7FdxM3XYt30UK5ndN88dXIJrsEifbkxSF4VyUUjupZNm9GmjZt0aCWwcXtMuroF3u6HH8ygzu07qq6gLkdpuyibBAWUk9yoWGdTX6ZtS93yJ2742DT3/fffdzy8iDIy0BJ1jE6XhwHitruuiNesjJC0Ge4wNUJ0MKiXJ7+kCs4UiEsRQxDzuAsVoYTOjIPIryLu39UmXIDnz5fSG8u2UoPHv6GU1leynsoLiQaTD8zNO8keTHUJKhPdQ3gT7rKzgekKf+76U65HQ8D4F1aCeF1rA3ovW7JUkXOsAuVzD416MNIYPTBi+P2yDA9Ps9u1bsPlgvmIqu69bMBGxHUazbnhL/juu0gdjZ78eezoMelGIW2ENQ+T7HTQOGd/Mlu6gtOmvierQ5w05Fo0lEhdDHDcxFemV7JMvt2xfUeFZYf6QGPHDrpCnhwHyNRAyoyPGYBIJjw7nuMsozNEaxNddQr0g2d7911DRD+5ASKfLtg62ogoGxu6nIYMvou2b91Wvu4ALRWN0UWkxfG5iQ6zHcxsCdShfT1QI0QHRb6dP1+IzoGubAMxLlZ008aNkUrozDioUQHRldD0FVtli6hmj8ykxIZtpMsRTk6UTzsPJh+oWDSgvbv3sEVWj9IoQ4zVoNzEEDyAtK++6iqZdgBPFI0BqWNFinR3XdfbCPBdesKzz6pJz3HI0+ytSVi3QWpAFzzNXVlUTG1bteauToLjAUgZabj1sGHK0gBG3LRxY1rIRo7yiLAJ/sSGkt27dotIA5/uOEFwM97/wJmLKPGba0wezG8PiO4uva7q3oN27dhZ1pBdAn3/+OMPykhNYx00mZq0PNLEwwpskolwJpsGZV+qR5DG5s2bZQNPDGWEGanJap9IU45eOsYDhBXy4XLq1vUK2vD77943KpYLGaMTcHw/1QWig+z+80+ZqGgMy4voGmY0kJ1BbCVMY3UyVaMCIztLq/88QOnZRRTO4sK89y1KCOJu5+3ZiWFw3oCdcpev2pMoI3hBUJ9evaNWPgADyc7NdcY1JVnG6lWrVCVXQHYwjisu70onjsf2QhH3RCZdCct6SMNnGOMU4+b8Y3nc5Z27qO4gGjfS17qbMG49bEhZ2uA44RVi91w8KBJvxypa7L57FRM9rjW6OMBvOZ4s5QjCMQ1Q9LCvta73gtEFcIiSgU1Qpfy8qpuPoYHB7u18ReiJ7xr9b+inunsc1LQBidZ8cQ5UTQzJ4YEQbEAIgfME0vDyrqCvDVtnL9hlBXTp1Im2/rFFOQBCeGWZ8Bqjk/Rd8Ca6NbVIdKIIyELtztCd7xjSfWFFvYgOT9yOcoS21D7RldLv/xyhNLztf0IRpYwvouSr76Zk7kKmJoe48Mrnw+RPBr1RmVUUGOPGDRu0N8DpuBoGjgmRsJEsWcrdT5Q5DAj/GZgmga407tAOdFgnDtY3zDcidAEkrCSsPtyC82++/oZOV5EaYHQzxo26lgFsITp1zkAZsSY/nNMwccr1gH09x2lwG3uLZ5j8HV1ZQAwYPDe6RKSp40M52fEI9HUyXqivt/WQeCwo3VVYIS6BaqCvv/qaU/aO4Ccfw3bmdpwSnj/tuAGUyUsvTkYgicaOyjlQ7kTlBTqhAV977bXysAEet5QBCIFtSfIEnXSZYG260dsmFOhr58vOi1NWBhz25v430fGjx2Q+oCI7pU8E0RlwGDs+iZOPYyt1pww4DrwzotaITvQ4f5a7Q+dp06Ej1OHW+7kwlaLliI4L69o+fePuOtWYsDFs2HeYGuDtYFlFlJqZR6njvqeEZh0pPSGdUl2enTEEkMYedF1jFGg8Alf/nbfelkp0G5JJE+cwhoU5XyqQgv6gx0ePVsZr4IpDIZlefG5iZNciiuDpqdQjhxOD1N+NPuY3HjhEkJlpNPw9lfXAHDFjhNJVMvrht3W9nY5Cshis6KoFT0AH3Xab2JatjxdMml7AedMoVTzlG44bJmyrZi3oz527IssOxcl6Dr7jDhUnX2/i9mrISO+HBQs4UAUVUA2CsXPs9I0HPoBNEG7dpPy5Hps2bET3DBki25RNeeddmjzpRfE+0VsT+7TrugK8/vIrdO4st3VjayzxEh3S+XHhIhVOY93adcoL5TBe9W7qB+cuCtFhOco/x85Qv+mFlDFyCgUCDZ1MuBUacNNNcpepU8Lq7Dx2mppPWkGp6L5mYzeVQgrd9w6TXHPOQzAiD2IQnDfsWYdlNrEKNB7B/LCbbuyv71blK9+kiYcOpXgHANLUMB7xt99+K4Yg0zgAvt6Ow+C63n1k3SQMEFWBsF5iiA66IH0DxGH/lru9Nn78btaoscxTw5PPrZu30C/r1tMXn31O99w1RDxWsQsX0YUTVFiTFo6jUWKbLHuHXEy/uefuu1U5ad3cZWVgDN+ge9cr6GX2ovKXLqOtW7bQ8vx88VrxoAHXx2rAJh6Q9QvPT4ycUsEfePhxXd9rJW+SRw5j8mTnywAD9xVWQDXI2rVrZaqLTB1xEZ3RT77rvA9gT+z3336TvBkgjxhCwIOszh07cZjYRIdywqYTu7bviE50fJ2tgw30FMoR3bpaJDrIGW54Y75eR2lZCyllAmek3dWSWDIe+VuKoDBvHzhQh6o7gomZ3EGiHq9j3e0KRXTZhZSatZxSut1JSYncnbQaAfKEwoZ7rpZV6YiqIBjfbIQNGWEAqEiGSc9Oc9qUqY43hjZij+38/ddfMoWkIqKDIaTxnXnDb7+LAcO3BhDeLbZHJ/VoeWpuSHeR0btXb3n/JhqICHTkdHAzPFNylhYtWiTz5gzRSZdQwivDN2nIU0o+h/3bCrlxGEJBvPfec480BFNWsYgOHuXTTzxJRw4dVmtHOS4zroqyRBfrRSaujFCqZzwGJj7ohQZ//Bh3zbReyCdWVmBoBjqJ54pwnA/JGx+T3xqN0tLpwD72zDkcYjCoTsHN895773VeLSrTRqKQOY73v/4GOnTgoNg08iUkZ5EUPjf+voHat2pDKRXEZYDz2EFFbEHHEfVhhBUOsIkORQxr+omJDvP33GVpYOoH56qV6KQw2IAX/LaPQuOXUiITQ1L2agoNHM8Fmyx3aTsTyDgGc+uaYN3gGS7Knq8XMMkVCtGF9SagjUbMoJQQtkJCpSqgIOFRvMekI4UZo0BjCcrx09mzhZzKunVl5SZlx0Cjxzie1DwLKt8QHf5gmgemDhhvJ5ox4BNPaZFuvEQn4Y1RehgmcCN3b7xexsPNRcpYPSU+TwXLl1OzJk0kbhuSjo4fRCeGy2XxzLhxDnFC5/u48ToeHeDSwwDhQXKTcp+nEvYKQXIlDNGDgbjQkAFs+PDyCy963hwMTEMCiWHYYuniJYoMOB4U4GEm0jYtW4lOcp3OC/Ll5E+jReMmdHD/AQmHsjeoTtm2bZvcPPFKg5QEa39I6GXpgnbZlL3wX3/5VZeJypOBoxi+8u/PPp7N+VPh7Hi8gKlAdq/HJjpTPg6scCC6xXxTlDRV0rVJdKV0+PRZ6vPOKia5AgaTQyZ7Q+MWUKhJO0pLSItQBAVz15136tB1RwzR9XitQG3dzvkIZ6+kYPYaSs3Mp6Re97L+qFT9ZJHz0qhBA/HCnFqogsB4hg0dWtZwAavcDLDXn3TjdJrGBiV5+XKe3p82LaLr5I5DGiB/DuBuMubfmfAShyXQafr06Y4uTlweRglgX7w/8JQUSrkERxxS5h/wGF59+ZWIvEr8Om5bbxA+th3C2kvEDQxlooP3aIe3dTFAXm+9eYDzjlMQHOpa/um4RDlR8LxcdzOXC+L2KjsbGMvCFkq4uZgBd6w0iPCoca3Oj4EJ37JJUzq0/6BK+yII8oZt2yUvegxViElQpgcA72w8e16l50rV03yQvy4fp4y04Dc8195XX6MebsQoK+zyvXTRYgSUeOxtmkx9O7DCoV6X/IhwSFR9oOsqL77ic15pXkSiK6EFG/dR6oR8SswspABILrOAktkjSu/3GKVfoiobGTMN7K476jDRvYr3vuLl2dgfbxWFc4ooyF5qg4dmUzDE3Up59wSMPInGPDZaGwLKQUd0gYJlTS1btIxo9F4V+eQTY1Xl2bCFf2/etMmZIFuRMTRt2FgNqFcg7733ntIpSlwGODd29ONSHp56sTiH9Rfc5Tt36OjkWeLSBu/kH98ZeKft9u3bnUXl992jiU5fF003zBdb+L2aj2eIVsiWUU60XvDS8M6RWONQOI+NUTFeahMdNk+AvrjZyLWuBmzQjMvfdF29FaqaoKzuGDhIk5sqR+eG4gK67DKUwf8cT9eCW0CE06ZOlaftajNb77Iytpb1rFquiHwaovO63gZucMu4LlgBp4xq7WEEXkoz+ou1FAS5TVhBKdgSHS+Hziqk1LHz6NKMdjJOJ3PStAJY4F3XxBBddya6FIzLcfc1JZdJLhdd2QJKm8Dd2Stu4gJWT19hpDIDnAvSdP3QgC5U8vLyZGmLY4hoHAb4DXDlLsSyJm0wDmxhheDx9ezeXTU0DuOE1zDGAI9k9ief6IDeYogOOkXoZcUncXJaixYuVA2Dw7nVihB9Aa4d99RTDtF5kpZOD0b//YIFTjcRY3TGs3Z08tALS8Vk0wFO0iY5T/30iVMnT4oHGZvouPvZrJmM+0mdMPAdE6cjiM4DCIvJwrJGVCdd3YKpXk2bNuVyVeUkZazr0q0Pdi7GwynYMxBT+BpMdEa9yNhfDKJD7wEbUCBcpYhuydIIe19fW0R34EQpdZlcRAEmguD4FRTkTxBdgLt/eHN+cMCTdGmQC5jJTsY1kOn+N+nQdUNQForozgvRBbIB9k5zOT8MjNmFsosp7Z6XKIELODWYSrM+nKn2C+PAVSU6NFy8NEU9EeNy4gabmqBgN148wcKESUy23v/PPgEasQ0cO3jgAD2IXYfZICoiOhjDsPvuk/GYaGITnYSPQip4uIGF7CjLmA0XJxm4w8+fO8/pZht4pYXG+tabbzoenSE6c95rDSm6a1f16EGn0T3nMo5XL1TqY488KjcCOz43oCc8Z+wHaMKi69ulYyeVjxhEh/NYG2zGCytWrvLy008/RYxnRSM6lOOo+x9wPC4HFQmfR/cV42/xeHStm7eUhxwIVxWiq7Wnrhv/Ps7d1jxKGb+SiY7JbgJngj2iZPboglkFlDHuW7qkVRdOHO9SVR4GpguYgeW6IPBBTjFOciPq9rrSP8D6B7j7LS/OxguzuRvb+KmFlNKsC40c8RCdPsmNhysA9mlILkaZRhXs9nFZly7SDXDejMYk536QAzRMSxfCa5yh0LBBJBrheMNGFXZdbWA+mOxRF0WwMwniMd6WhHORCs41ZJ3+2rtXwmibjC76ApDPb7/86kw3MbDTMQSGNHAzgN1I1/XuSKJzoMPiHMgRT8Xx5BFpxawfozjj7bfekvAVlZ+c40aHPdKMgIhvvOEGeVACIosWXo5zXrHZgOhm0q5GgYetylORENKMKF8NdG0nT5yEChE94tIF17H933DtdTHLCcgIpzmroSpNdJZea2vrYcT8DXspMXshhcZzd288d1kzdddPwJ7QhHwKD32T/m+osVKGFcRTKVkZEUOJmhI0gVI6QbsOn6AWE/HaRdX1xnssQHjIC17ekzphCQ2c8C4dOoS3kqHkVeEjG1XJyk9r1lAIb0ODQeoG6+WheMHcpaMhlgGiPrBHXTRxiK6CuITomGD/2vuXDhVDTIExDuw/IG+qt9OQdEz+NZDGE088weXNtcVljzE6x4sw1+G7Bs7hqd0tN90sRFfZCvr6y68qJCpAdOVrCrnhmvih3/3Dhqu8xAgP4P0OCHMx5MMZM9QDEascnfK1AKL7YNp0yQNu2HG5IHyt1ANuOHHkE6T168+/SLjKEp04FCrJ2iO6GSs2s/fGHh3G6IQcVNdPkUMhJckTTPbwrh9D6Qns1QUS2OvIoL/Zi4D6MfSoGYGhnTtNm/edlJUR8OhSNNmpT/zOp+TsPBo7dxN70vAqOAyUr2IGYORmmRUas1SeZZjuinSjqkSHhyqPPfxI1MZmiA7xROhmx8G4UKI7dvSorGk1eTf6utPDeWwIKcK6DrWJzgMRRCebWaqg8UpxUXHcRIft7E33CuX4yuSXVJnFQQA9u3WX7u7FkNdee022XrLL0YFOH+UK7/NL8SylaAUxBdcwRnCXF/m08+QF6IBhF4QpLOB2VUHdGSiiW6KITuslRFcbXddPirZQWuZKJreVlJxTxGSAJ65lRJecDRRQ2rjvKdS6Jysfkida2O6mKt29ahUowf3PTX+dpDQmtgCTmpC1zociPJB4IV07ZRUdLzlLJedVd6iqGcCDA+zmKhXLEOJiuA0yGuR6rvRo8DIGGyCEju07COF45cUmOgkTpbFcONEdo3Zt2qo8WzD5Mu/+xO+xY8fqMr/4RIcJyhdKdNgdGg05nvLHkqq8ZXnVYktuwS7AEZtU2nUH8DEpZ87DzJkzUazKncNnLF30NcOxXyHnNVY+4Vn+vG69hFlRuILwnmXP6yzYRGfSq7UxupW7j1AGezopOasokFMs41rJ4gWBMBQ5oNsXysyjtNFfUELTy1mRJMlAXC5yTQgKg5WZ+8teCk7Io6RsRXTwTss8uxWCJs8vp21HT1PpeT2nSwWNVZ7ewoG2bd1GjRs0lIoRo9OIaTgauC4WvMIZyHluDE73iyH50nCml5hrAauhADh3IUSH+OHZY0zRzncEdFo4h5cZqbv7eRp27318vmKiwzpZEJ1aLodE45fPPv1UD7J7xw+IftyAi1asiMjTjh07ZEeXeDw6NOZ7htztPJGsTpE5kEYHu86s7ziH+p0yZYpKv5JEN/iOO9VTVy4rO19upIdSnTG6qhBdrT113bj/BDV6YSmFc1ZSSi6DvTqQm/GCDIKZeECxghqOfIeCjdrT7E8+Zh1iaFGTwhU8pegPCjAhg+iSheiM/kUOwhMKqOiPfRIA2sMuDCorGFSf9dFMqVDT0G3EaiTVAWPoOVnZjkEZkgOmTZumiC6KYQHQFWS9d88enbP4BPnHux9kk1ErDQN3Gu9Pm+68GeuBYcMjzruB8OiSDQDRiUcXv60h36+9oiYzR8szgHN4kPLnrrK5iEgFyyFv6n9T3ESH/fIwd0+Vf/x6xpIfvudeFOsgaWlygz5uneCR4e19znZY8ajAemKidJ9evSjpUr0HoSteG5hEDe8dcf8rie5o6XnqO30tpWMqBsgOy6YsgjMAaWAMD2/lD494nR589V3u/qlH/rUuKEduQCNmF1EiE10ye3LwSjFFRnlyyAM+sVddAS3ZcoCDKN1tVFZkcTrfzaWRc8VIxWljNGRnV6Ka2Z4kRgWU2zHkAoC0YFBdu1zmeBU20ZVbGWF5AwY4h6Vp27Zu1TmLTxA/lpjJVug6nuhpJNNS9AI00T00IvpLuwHJFzfyvr16q/lhaCxxCupl8J13xiQqnIPnJtMmtCAVTBWZ+u6UuIkO5Xt1z6vob3jEHLa6BNNLbI8On54Ewcduv22g2lEIycejAl+DaUzIP4YIKrJDnLvphhtlCR7CYSdq5NvrWhs20aFYgFobo8Og/Jv5WyktK1+WTGHplJvkDAKYSJyZTyHuHt7y1hI6wBk/f/4MxxJDm4ssaHCbd++n9pMWMcGpBytKZ0Ny5jfmCObTu3kbCa/1qSrR7d71JzVp1Lis0kwDZ5iGLxXOhtKxTTvqe00v6nPNNQpXX0N9AT7mxrW9+tB1vftSn6uuofRguJwx2DDGD6LCVA9UhU10eA9AhFFZOpo4hKC4QWEnEA6kcxdbEP/d2IVEE125+K000sOpermd0uvRBx+quHEx4NF16tBRvSOjEkSH+YgybhilMRngZtOb6wJL02wThn6oWxmSiHEjQmMWQmSgG4j3YVTX1Cu8/Bq7lsiaYE5L4JUnJoa2rVsLccXdFPm6/GV54jGqOCsmutF44IU64P/FK9hhYLLyutZGBNFxkiiVWlrryrGcO02//XOEWk7ECoJiCrJHF9Sk4IUgEwW6sGlMdsNm/0R/HD7BpKGMF0Zc0wKjyucG2vnWUaxbHmOZeJ+R3lwZ8WGs8a3Fv9IZKq0S0SG/WMQPA0elSUO3GriQh1V5hXnL2TM5LWtTBeylAGhkglMazjVn6fSJkzRwwC1ihIjLwDYM+zieFkIvG+V2LwFcJCTn+JosvJUMS6FQjTGqEnFjSVezps2cdz5ExO1KA+sq5X2nMHoGnhTHyhfiDKeEKA+blOpGFkugFwbmTb2447WBc+OefIrj1nm2BPHgpUFGNxvuOITsGCANeFYY60T4qgo8U2xQmoRNUdnrEsKLlie2sfnfzC0rpxjJ47qnxj5pEZ1HnBo4h+k6nCmJV4guUDmiQzioVEseHRrDSTpxrpTGzllPaTmFlJrNZIb1oRqYcGsTnXlIEczE09jl1P3N1VS86zDbbynHhfUJKt6LKTAiADvV4qki7nppN4+lwDNMaBPyZUqM1zijdF2ZCOdt2kcl/K8qAoJ94P77HeMToLJcDRx3wy7tO6qdWrnCje7me8QOHK7fIIUZ098vI9MoxgHAOPpde70QpF38M2bMiBnWoHWzFrRty1bHMCsSlP0jeDWm1W31ihMAoWXiBTIgUeST8SgTXbmyi4JBt9xKp06eUnrFkL179lL7du3UOBCHjZXniB1wXYJ3RxiPPd4yBOF0vexy+nHhQrWGluvyQpqD2AADU0xAdGbxfUV5urX/zXQKW8THUX/wrjEfVkia7auifDVv0pR27dqlion/gOiwBtnrWhtuogNq5akr4uCqEI9s98kSJq01FOYurCG5UC57eCA7D9IwRBLOWk4tspbStOI/6VgpKgfLqtQ7NCvrJcUrIJndu3fT8OHDuZK4ixPMoNRHPqfk8YWUlIn5gHgQAS+urMuqUEQZrOuSrfvYFso2gnRqoRKCRfx4paHdCKI11odGjlJLnzgJlImkpr+b3+a7+W1Uwt5h6dbKg2gGCeNoEE4rt2uuQ3R8jYR1EbEbWOSOlRamoblF6pXLf9p705y1vdHybYBtltA4YPAq/HkhyXiITgyfG+JzObl6LWd5nSA4jq3oh+MhBzckTGitqPEC7Vu3la4myssrVsSJFx05OjJixSnlwddhKAHjt3lLl8nKGcRlYOK2xT6PCdKw79ncY8ALxsPo6nFZVZQ2ygk7Qc+Y9n7MJ8CI/+EHH1L5AcnFILr7hw1T9sthoXZViK7WHkao9JnsOAeLf99LjXLZY2OyEKLLUV3ZSLJQUETH17HHhwnFIMh7Zq2mLQePUul59pc4PvVcs/rEGAK2funYsaOMDaWxAQRaXkvhZ5dQ4gQmOfbYUrKAfNEvUu8iav18Pv11nOn9nPHooCMbhkMz8QkW8YeC6pWGxri9Gisq7bPZnzLJoZRZ+A9/jVx25vHbAC/b6du7d8XdFgbSwaD0LMyn0oQCMUTnhDNE50F2YmB8LR4AbGCCBaGZeEzZY9xo0qRJlI6XO3MYM32kIvLEWONp7ZHJNkuMhx55WN4DK+UGeIQDVL7Y+LmsRz/6GB08eNDRxdYL63QHDhzIccHrwXJFDluBXmioWfAyER7xaLgF60FlmRTKMAYhAI4tMFBn6Bpe1rkLPTF6DM2c8SGtWb1G9pjDZgD79+2jvXv3yhu3ipg8pk+bLt3lnj17qh2FOS8L2TPE2J+UAQPvlvV67SLOAY3SG9A8dGF1+diCYyA51B+mJBk9o+VLjnGc0A1hq4PoankrdS4AzgZWDExb9Q+Fs/PFU8PGlaFyXddIKKIrZKg1pZ1fWEgfFG+l/WcRI7qyypCqKihoGMUYNvYG8HC4coAwdw3DtzzPXekVTHLsyelxuqCL6ISY+Zqr3l5Lh8+gcRhaASpHdNAlKzNLGTJXCCpFjEZXlgGOY/scDGw7hscf+GpSk6Mevw1gJC++MKnMKF1pGMA4YJR3D75Lnr6Z9Gyic8JGIQDEobpHyZQaDtOgQYPofe46Y9b9xx9/LI2wbdu2JC+QZjKR/Jq4POID0HX/9ONPlD78X+XzPI168EE1tmfgERYw+TJdLOxsPGbMGNm15YsvvpD5Y/DiMjIyIhoQSK4iomvVrDltsfbeU3+9ZeOGjdS+bTuHENyw48VvIbtyUOWKfIC0MSUFD2hkOymOF4RobmbyMnCULx977dXXZEUC1kWjLIToOL5o+RJC5HKAB4w5nvKGMs4j3rz28/qfacSIEUKgqv6UPgKvuBjYBBbkiBu12CcXFIhP3kDmcb0NN9EhbK3tR2dECAkFwnfxl5ZsosZZS2Sdq5AYkxk8POnGuonP+q3IpIDS2bPq/846mvP7HjqO6QTI4QUIwgHYrubjWbPosk6duSJ1oSSjsEJ0SeN2lP7U90xuqqsKggt5enPwOgspa8EWdsN1qUspGooB4hMYT88ruys92OBknzDWCwZtVxoqC+/gjHg/hBbrq4jrdIRgN180hmjGARjjaNakacR8uMqM0Qmp8CcagBr8jg5c4w7vBYwbwpszGZSS5rIfyQ1OiMPA1KsLxvBR7yYfDvi8A/07Vh4N5KUv+sELVINe0cofni08+BYtWmiSL/NE400PAOnj+gi9PYD4TRpYooWVIS9OfIHDInxZuTtlo38byHVcppjIjXdpYCPSHt2uFGJVcccxrYnT7sBd++3btqvdWXRZQLDWFcQcK+820enqr721rrag7YNYSriPP2vdAWqWi00sFdnJLiA5TGoVEJ3CCkrNKqaGmUWUlruMhn+0itbtOkRnkFmOW/2rWAzBgVCWLl1KtwwYIAUrBYECEcNHYfHd8MbHKYMJWRGbWucaudZVAQTYgFG88xDHDQOXJqdROVm5cqWMwUhFVUB0qLBJbKCSYYMLELzXABtcwkijGZcYPIyH8bXeUQNinrpCN6NvNG/AMTJcb8DHnXzyp2mMXuFtoCG1aNyUVq9cpeuTldH5x++RD1SB6Pi46KDzIr/5eLSycQMv7JaHQ1AqzjrBtSC7ju3aOyRUmTQrA5MfoAffUDF/7diRozT4drydjNNOVJN7nbKxwgJSTzo82o1MBdHlbI5H0xvHUXfoNX07b76QPFqIXUyyqB9xucK6EUF0uqjrBNFJpBolrNyybYep77vs0eUwWeipJ7GJTndnZYxPoflzy2jkp2to1Z5DdJJzHG3sTjUI5cGB4AYPHswuvnpjulQujBpP+biQQXZJjbtQg7HzKSxEt1ythmB4EV1Kdh7dOLWIjuPVbfLEFZ9A5QT6YYwD44NmWoVjmLqynEoLBGWSbKzKiiWY/oAxnthEpwz5wZEjZfAYErHWVRODA484xMiQFw13OJNfd1gbaCjYfhtdVnmRDethNxaU4YgH1GLyeIjOfFfeCNsCQ22HxUhQXo4qm+heivFgul/elbZs/qOcTvEI9MYOHtimDGVTUX1UBY49MfDUFxORsYphz5+7qfc1vaSevcIZQCen/rhsYYcGTnm7wjhhuZzSwmGZaF5ihkBQSAYsF0J0Jnytd11FtDIApgKc4UzuOVNKL+dtpcteWi6TioPY0JKJQwHjckxm2Lo8glTKuroCDoMxv6bP5dPwj1dR3sa9dLIEY4KK2Aww0I3xoH79+ilC04XhjLUwUHh4ogZvrmH/J8Wbg9fpRXTQUe3Igpfl5NFnv+6RccjKjsnZgvGKvn37yjiHVBR04k8xLP7Ed4M2LVrRAfP+1ioIygZbMamB9sg0AMdQoAMDu4lg0B71KERnrrPKUWCFhXE1TE2PSnSmDqQRWuHcQEPBnnvTpr4X4Q3YpILjDwy/v6zRAZyWV3yYMJ0eDEm8mGIh3Wa+6cnKErwohoHv8vJtTWZu4DiAXXh/XfezlKetV2UEjRYTc7ElPnYYlm4i4kc6Gl46VAZSxqb8uWzwpFLIgoHx3lv631TuDV52+oAdHgSXyj0gAN9N78gdBvFh5+2ZH34oN0rTLp3C0hVoE50d3uji6MTpu4mu1p66eopWSn8IIR08eYbmrN5OD366lppOXEiJ2OUkczUFcvO5qwoiA+mpri12PJFNL5nkDILsEYLs0rKWUqOsxdR/+hqavnI37Tl0gtauXi1r9a647HIuPDWGYIxaFhvzXdsUhGqEKZTcug81GPcDx7lMxuS8vDhMMUlgbxTvwXjg09/o8DmuvHMndeFJzvClUoK5VenckKWx2wSgDcsAC8rvunOwNOrqkD179lDjxo1ljCgiLV0uTvkAbISLF/0oWZz67rsR56OhUVoGff7JbGqOxewcr5CPBjyIVBkEV0boBsKb7524a/fd/G89uzxG0HiGDxsm+jvp8He3TsB1vfrQK5Mmy1M+YxMCi+jUKwAjG74NHMccs514PykU8lIqTjGNH/krKiqiWwfcIjuYKLvV3qaHDpWBTXSArBEG4eA/f2IvyOe4vURMO7Lqy4bUHRNcGiNdE53ZJt4GyhNP91etXKnGLkFOkmELWuQtYNZTW4ErD4An0a1bLw9jRGePMMaOapToIkVXMAr6bAl9vWobtRr6MgUfm0HBxxdQ2rglFBqvpnXgyadslcTkA+BpLNaYpj77I6U+/S2lPTabwnc9R6FrBlOwcWsuEHfjZWOB0UZAFwYXQijMd9JH3mZSXU5hPGUVogPJ2USnfifnLKXmk1fR9sOn2UvlTMmDCJUfj0xWKMg/dgNxljyxTma79Aj9GTAevCG9ugR3WDwFNZ6uA20gBjAQNLgnH38CCtO7b70TcT4aMAcPXaO1a36S6RSYfuA0BBgfSK4CosOYDrbz3r1zFxu2egAlRGeK2SpqnJM3prGeZWl463XjddfT6VOn6JOZs6hDO7xvVd0I0TCNV+cmOueT0aJJM5r8/At08riay+bo4tLpQgTxoV6w9hPbHeF1g17dSlNG8ULdzBVACm++/rrzJF2ywH/QlcXOyHgZOh4yOOXogiE6kJxNdOLVaVzeuQt9wF1VKSM8PDREZ5cToKWqRCfTsvhcNKKDzjg/5+uLTXQeYqeHgsY+/jf060+XpITokjBXcJN2FGzbh4Idb6Tg5QMoeOUgCnS/nQLdBlG407XsgV1JyU06UmJac0oIZLCxqu6IPMWyiY4zKwWgPSV8NwWCbkJikO8+1z1E4Qk/SpcVXpt4kBGeHLqsGDssoJaTvqOFO/bT+bNcgablRXRf4xcYNaY2tG/fntpxo0PD69iWP91grwZ78f+8fr0OWXWBBzFr1izq2KGDxG+AwfFObS2060BdOnWiUQ+MoJKzZ+ndt+MjOkxfwCRVjKnBWD779DMZi0pPTRXDs4nNAF4WZtc/NOpBKi4uVlMZuAFKY9GN0hi4bUA4h8m04gHB4NEo+dOtE+zjJrzSsaRE9Nq5cyc9n5sreZYwfF4RXCTRYUoPGu8LEyfS1m3b1ARabmzQR2rdQ6cLEckj4uX8Ig3cKD775FN6ZOSDMhaIbiAm8XqVXTQ0yWgoPRvscvzRjA/ljXCYSynkBthpM1DHq4pXyk7HXTp1Vlvw2+WK9EFuGobcsBvJkMF30VdffCnvprXzIp/4Lengj4YWjLN1Zhtr37atTLsB0BY6c710ZvsztojJ5/CiVXyqtW3eukXmwGJ4pV2rNvIibaAD/+7QhuPj761atqQWrVrR/G+/jVlFbpIDqkR0bkFBYMAyISmREtnAkrhgA1yQ2L5FGTAbXoDBn4HESygp8f9RIrqk7BXglYOGyDCgX24+lT4H4LfqDnCc/P3SzjdQxvil3F0tkGkvgRwFPO3FsjQQn5Af/27/wjL6YcthKeiyfhT+4IdB/II840EJZrofP36cTgDHygOTTAHpAlSTIG0QLdI18XvhxLETrNcJ1Tg433hBt5tAvNBEEx3GMMXIGZh7tXbtWprxwQeyhOuJR0fTYw8+TOPGPkmvvPQSLV28WCa9goTNi6Xj8QgQ991Dhsg7NmIR3S033yxEZ3RCnjD+mJ+XR2+98QY9++TTNOaRR+nJMY+Lju+/N028UmxECr1KOD+mK4bwzu3NpdMFi9ZJPvV3AEvW8BABJIQ3v2Gy8OQXJlHWhEx6dtwz8g7WnMwsmvT8RJo+9T1a8O13tLKoWMLIO2wN4UjcSMf5KBMcQ5p8LTw82N5vv/5K8+bOpZdenExPP/mUrMq5n73Nxx8bTdmc3qyPPhIPFPUGcjblCv0FSJM/DalKevgjX5SgXGH7eHLtALYnbYLtj9sHYObwCTgcgLBiw3ZYC9gK6uixY3SEcZpJPFYLqhGiO3TwkHgwMNhgIhMYG6wiJm2oSQkMrNED2TEB8jUBJrkUJjuQmEzL0Ncbz8325uQaOQaiS6KkJp0oMPYbCuXiSTATm7zOcIW8uzWcVUSpmUVMessp9PwPNOij1bT2n5OySkMq0ilqN6ogXtG5Ud3ilUYFANGZ8nUTiQHO42XemH8nZaXD4rv9wEjISzc8c6wcnGvUdRHQAmPHRFTb63ATHfTFDVOIjg3ejsdOy6QXoYMH+I98ouFUL9EBiN98Lw9FVpy+fPIxo7MNHYf5bnR24kEwjQiR8+XDmN8Aytv+bcOJ3wX7Z9kXSySsGzjugiX4Cf1Vuhqc3wjgP77q64GK5KITHQSVgjtoAESXkKQ8MhgvE5lqWJjvA08MwDGDSIP2bISG7OQ7e4ApLSgNm34+VyDkFsQ63NyV8j2VPbt09uAaZa+kQTPW05wNf9ERdHeY5M6B6CKKzUY9kBjZEqKTOtFl6YEyotsbEY8xOPuY+5yBI/Z1UQSeKR7UoAsVi+jwak2zD5qdrkSvj7mP4zugLoqUKIerT0wCVYWHVHCq9sXW3YYl5Q7bB1zARzxSM0TH1nSMXczr+l7LhmkesXN3lb+D4MqIzhBc2TGFSOOOhmYNGtPs2fNo4pKtNOqbzXTtm8upzxsF1Ov1FXTD28X08Nwd9NHyLbR+zwk6yeQLvfDMge9j/E93VsT6ld7/JbkQokMxAYbEDGzycJ+vjBiic0guDqIz1efogojwB8cZ5hhgXwP4Un+lRogOAlL55ZdfZCsXNWjNRGYgRqvG5EB0iuQS9Wd8RNcwNY2++XKOdulPsuFyv5/JC3spyPpc/gVDd1Z1RQgOaJPH13Ln679MnTIlPqLLYKLbvUfKyBCFIQv7t5Fox+MREB0WqleK6DicSUuqEX80cAy3M3Pc/Hau9aXeSo0SHcYAFi1aJI0lFAgQFvyWgbudTIAgPBhwmI1XlnHFAAy/Xes2sl+Y6tPjP/4p81X/YhmyvkKHj3Fx/RPO75R33omL6PByHEV0XK6ACi5ivpvfEPuYfTweAdHdeQeWM6mhDi/9DNHhBdZ4Z0S5KjQ/GIbQ5Bz/wWfEMV/qrdQY0UEM2eUtWyabHjqPs1M0QHjWI/SKYIx80G0DaeuWLRJ3leW/avGc57fffCsuomuQnkF7QHQyIHxxC8uL6KCDrRP0xZw5vEpSvRxHB/YQnLJPu3/7Un+lRokOIl4AAysHMP6CtyvBK0O3BESHOVcVAcYNUuzatavsuGHmDvlSNXnrzTfjI7q0dOXR1QDR4aZ4+6Db4yC6APXv1y/mRpK+/HelxonOFsxk//67BXTXHXfKC0aMZyfEx90RzLTHEzfMbjeTF4ffN5Tmzp1L+w8eVPOxfJKrFomX6LBuExNea4LoULe3DxwUF9H1u/56n+h8iSq1SnQwSvHwuNHgnZnY8fSVl16mUSNG0n333EPDhw6VyYx4pdzKoiI6fPCQmvTIBAeSw+RTn+iqR+ImuowMriu8pYsDXeSirwzR3XDddbKRgk90vnhJ7RKdJUJ4BkxgQoIgMuM5WMA1ZoKqL9UjcXdd2aNziO4iC+rXITpOG7q59TNEB4/OJzpfokmdITpfalfqNNFxuqKXPTlcwxDdjTdgjM4nOl+8xSc6X0TeeqOM6KKhzhAdw9YJK2rkqas/RudLFPGJzhchFCzIt3c7KYPacQLAlKArLu9attb1IgvGYh8c9SB17NCROrXvSJ0FHWTni478aQMbdGLBuk90vniJT3S+CGlhzhqIpRzw8MeAf5vraoLokIbRwex2EqGPDaOTT3S+eIhPdL5UWmqC5CB2OvhuECH46ZObLzHEJzpf/t3iE50vcYhPdL78u8UnOl/iEJ/ofPHFl3ov5YnuCP1/OK9nQaX4j+4AAAAASUVORK5CYII" class="h-9 w-auto" alt="Certsigner">
+                <span class="brand-name text-3xl font-bold tracking-tight text-amber-900">Certsigner</span>
+            </div>
+            
+            <div class="hidden md:flex items-center gap-x-7 text-sm font-medium text-amber-800">
+                <a href="#conceito" class="hover:text-amber-950" data-i18n="nav.concept">Nossa Ideia</a>
+                <a href="#como-funciona" class="hover:text-amber-950" data-i18n="nav.how">Como Funciona</a>
+                <a href="#para-quem" class="hover:text-amber-950" data-i18n="nav.who">Para Quem</a>
+                <a href="#diferenciais" class="hover:text-amber-950" data-i18n="nav.differentials">Por Que Somos Diferentes</a>
+            </div>
+            
+            <div class="flex items-center gap-x-2">
+                <div class="hidden md:block relative">
+                    <select id="lang-selector" onchange="switchLanguage(this.value)" 
+                            class="appearance-none bg-white border border-amber-200 text-amber-800 text-xs rounded-xl px-3 py-1.5 pr-7 cursor-pointer focus:outline-none focus:border-amber-400">
+                        <option value="pt">🇧🇷 Português</option>
+                        <option value="en">🇬🇧 English</option>
+                        <option value="es">🇪🇸 Español</option>
+                        <option value="zh">🇨🇳 中文</option>
+                    </select>
+                </div>
+                <button onclick="document.getElementById('demo-warm').scrollIntoView({behavior:'smooth'})" 
+                        class="px-5 py-2 text-sm font-semibold bg-white border border-amber-200 hover:bg-amber-100 rounded-2xl transition" data-i18n="nav.test">Testar Grátis</button>
+                <button onclick="alert('O app completo do Certsigner está em desenvolvimento. Em breve você poderá criar sua conta e gerenciar todas as suas provas.')" 
+                        class="ml-2 px-5 py-2 text-sm font-bold bg-amber-900 hover:bg-black text-white rounded-2xl transition" data-i18n="nav.signup">Criar Conta</button>
+            </div>
+            
+            <button id="warm-mobile-btn" class="md:hidden text-amber-800 px-2"><i class="fas fa-bars text-xl"></i></button>
+        </div>
+        
+        <div id="warm-mobile-menu" class="hidden md:hidden px-6 py-4 border-t border-amber-200 bg-white">
+            <div class="flex flex-col gap-y-2 text-sm">
+                <a href="#conceito" class="py-1" data-i18n="nav.concept">Nossa Ideia</a>
+                <a href="#como-funciona" class="py-1" data-i18n="nav.how">Como Funciona</a>
+                <a href="#para-quem" class="py-1" data-i18n="nav.who">Para Quem</a>
+                <a href="#diferenciais" class="py-1" data-i18n="nav.differentials.mobile">Por Que Diferente</a>
+                <div class="pt-3 mt-1 border-t border-amber-200">
+                    <select id="lang-selector-mobile" onchange="switchLanguage(this.value)" 
+                            class="w-full appearance-none bg-amber-50 border border-amber-200 text-amber-800 text-xs rounded-xl px-3 py-2 cursor-pointer focus:outline-none focus:border-amber-400">
+                        <option value="pt">🇧🇷 Português</option>
+                        <option value="en">🇬🇧 English</option>
+                        <option value="es">🇪🇸 Español</option>
+                        <option value="zh">🇨🇳 中文</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- HERO WARM -->
+    <header class="bg-gradient-to-b from-amber-100 to-amber-50 border-b border-amber-200">
+        <div class="max-w-4xl mx-auto px-6 pt-14 pb-16 text-center">
+            <div class="inline px-4 py-1 rounded-full bg-white text-amber-700 text-xs font-semibold tracking-wider shadow-sm mb-5" data-i18n="hero.eyebrow">FEITO POR CRIADORES, PARA CRIADORES</div>
+            
+            <h1 class="warm-heading text-6xl md:text-7xl leading-none tracking-[-1.5px] text-amber-950" data-i18n="hero.heading">
+                Sua ideia merece<br>ser lembrada.<br><span class="text-amber-700">Para sempre.</span>
+            </h1>
+            
+            <p id="hero-subtitle" class="mt-6 text-xl text-amber-800 max-w-md mx-auto leading-relaxed"></p>
+            
+            <div class="mt-8 flex flex-col sm:flex-row gap-3 justify-center">
+                <button onclick="document.getElementById('demo-warm').scrollIntoView({behavior:'smooth'})" 
+                        class="px-8 py-4 bg-amber-900 hover:bg-black text-white font-semibold rounded-3xl flex items-center justify-center gap-x-2 transition text-base">
+                    <span data-i18n="hero.cta.demo">Gerar minha primeira prova</span>
+                    <i class="fas fa-arrow-right"></i>
+                </button>
+                <button onclick="document.getElementById('para-quem').scrollIntoView({behavior:'smooth'})" 
+                        class="px-8 py-4 bg-white border border-amber-300 hover:bg-amber-100 text-amber-900 font-semibold rounded-3xl transition text-base" data-i18n="hero.cta.who">
+                    Ver quem já usa
+                </button>
+            </div>
+            
+            <div class="mt-8 text-xs text-amber-600 flex justify-center gap-x-6">
+                <div data-i18n="hero.check1">✓ Sem custo inicial</div>
+                <div data-i18n="hero.check2">✓ Funciona no celular</div>
+                <div data-i18n="hero.check3">✓ Privacidade total</div>
+            </div>
+        </div>
+    </header>
+
+    <!-- CONCEITO / MISSÃO HUMANA -->
+    <section id="conceito" class="max-w-4xl mx-auto px-6 py-14">
+        <div class="text-center">
+            <div class="text-amber-700 text-xs font-bold tracking-[1.5px]" data-i18n="concept.eyebrow">NOSSA MISSÃO</div>
+            <h2 class="warm-heading mt-3 text-5xl leading-none tracking-tight" data-i18n="concept.heading">Toda criação<br>importa. Todo criador<br>tem direito a provas.</h2>
+            
+            <div id="mission-text" class="mt-8 text-lg text-amber-800 max-w-prose mx-auto leading-relaxed">
+                <!-- Dinâmico -->
+            </div>
+        </div>
+    </section>
+
+    <!-- COMO FUNCIONA SIMPLES -->
+    <section id="como-funciona" class="bg-white border-y border-amber-200 py-14">
+        <div class="max-w-5xl mx-auto px-6">
+            <div class="text-center mb-10">
+                <div class="text-amber-700 text-xs font-bold" data-i18n="how.eyebrow">4 PASSOS • 5 MINUTOS</div>
+                <div class="text-4xl warm-heading tracking-tight mt-1" data-i18n="how.heading">Proteger sua ideia nunca foi tão simples</div>
+            </div>
+            
+            <div class="grid md:grid-cols-4 gap-6">
+                <div class="creator-card bg-amber-50 border border-amber-100 p-7 rounded-3xl">
+                    <div class="text-4xl mb-4">1️⃣</div>
+                    <div class="font-semibold text-xl" data-i18n="how.step1.title">Escreva ou envie</div>
+                    <div class="text-sm mt-3 text-amber-700" data-i18n="how.step1.desc">Sua ideia, rascunho, desenho, código, texto... O que você criou.</div>
+                </div>
+                <div class="creator-card bg-amber-50 border border-amber-100 p-7 rounded-3xl">
+                    <div class="text-4xl mb-4">2️⃣</div>
+                    <div class="font-semibold text-xl" data-i18n="how.step2.title">Escolha seu nível</div>
+                    <div class="text-sm mt-3 text-amber-700" data-i18n="how.step2.desc">Público (para mostrar), Privado (só você) ou Criptografado (futuro).</div>
+                </div>
+                <div class="creator-card bg-amber-50 border border-amber-100 p-7 rounded-3xl">
+                    <div class="text-4xl mb-4">3️⃣</div>
+                    <div class="font-semibold text-xl" data-i18n="how.step3.title">Nós cuidamos do resto</div>
+                    <div class="text-sm mt-3 text-amber-700" data-i18n="how.step3.desc">Geramos o hash, registramos em várias fontes seguras e te entregamos o comprovante.</div>
+                </div>
+                <div class="creator-card bg-amber-50 border border-amber-100 p-7 rounded-3xl">
+                    <div class="text-4xl mb-4">4️⃣</div>
+                    <div class="font-semibold text-xl" data-i18n="how.step4.title">Durma tranquilo</div>
+                    <div class="text-sm mt-3 text-amber-700" data-i18n="how.step4.desc">Monitoramos tudo. Se alguma fonte mudar, te avisamos antes de ser tarde.</div>
+                </div>
+            </div>
+            
+            <!-- Demo Section -->
+            <div id="demo-warm" class="mt-12 bg-gradient-to-br from-amber-100 to-white border border-amber-200 rounded-3xl p-8 md:p-10">
+                <div class="max-w-lg mx-auto">
+                    <div class="text-center mb-5">
+                        <div class="text-amber-700 text-xs font-bold tracking-wider" data-i18n="demo.eyebrow">EXPERIMENTE AGORA • SEM CADASTRO</div>
+                        <div class="text-2xl font-semibold mt-1" data-i18n="demo.heading">Qual é a sua ideia de hoje?</div>
+                    </div>
+                    
+                    <textarea id="warm-input" class="w-full border border-amber-200 focus:border-amber-400 rounded-2xl p-5 h-28 text-sm" data-i18n-placeholder="demo.placeholder" placeholder="Ex: Um método novo para organizar tarefas usando IA e calendário lunar..."></textarea>
+                    
+                    <button id="warm-btn" onclick="generateWarmHash()" 
+                            class="mt-4 w-full py-3.5 bg-amber-900 hover:bg-black active:bg-black transition text-white font-semibold rounded-2xl flex items-center justify-center gap-x-2">
+                        <i class="fas fa-heart mr-2"></i> 
+                        <span data-i18n="demo.button">Gerar Prova de Prioridade com Carinho</span>
+                    </button>
+                    
+                    <div id="warm-result" class="hidden mt-6 bg-white border border-amber-200 rounded-2xl p-5 text-sm">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <div class="text-emerald-700 text-xs font-bold" data-i18n="demo.result.eyebrow">SUA PROVA FOI GERADA ❤️</div>
+                                <div class="font-mono text-xs mt-2 break-all text-amber-900" id="warm-hash"></div>
+                            </div>
+                        </div>
+                        <div class="mt-4 text-xs text-amber-600" data-i18n="demo.result.footer">Hash registrado em múltiplas fontes • Válido por décadas • Monitoramento ativado</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- PARA QUEM -->
+    <section id="para-quem" class="max-w-6xl mx-auto px-6 py-16">
+        <div class="text-center mb-9">
+            <div class="text-amber-700 text-xs font-bold tracking-widest" data-i18n="who.eyebrow">FEITO PARA PESSOAS REAIS</div>
+            <div class="warm-heading text-4xl mt-2 tracking-tight" data-i18n="who.heading">Quem pode usar o Certsigner?</div>
+        </div>
+        
+        <div class="grid md:grid-cols-3 gap-5">
+            <div class="creator-card p-7 bg-white border border-amber-100 rounded-3xl">
+                <i class="fas fa-lightbulb text-3xl text-amber-600 mb-4"></i>
+                <div class="font-semibold" data-i18n="who.card1.title">Inventores e makers</div>
+                <div class="text-sm mt-2 text-amber-700" data-i18n="who.card1.desc">Prototipagem, ideias de produtos, melhorias de processos. Registre cada versão antes de falar com investidores ou empresas.</div>
+            </div>
+            <div class="creator-card p-7 bg-white border border-amber-100 rounded-3xl">
+                <i class="fas fa-pen-nib text-3xl text-amber-600 mb-4"></i>
+                <div class="font-semibold" data-i18n="who.card2.title">Escritores e criadores de conteúdo</div>
+                <div class="text-sm mt-2 text-amber-700" data-i18n="who.card2.desc">Rascunhos de livros, roteiros, artigos, posts. Prove anterioridade de suas histórias e conceitos originais.</div>
+            </div>
+            <div class="creator-card p-7 bg-white border border-amber-100 rounded-3xl">
+                <i class="fas fa-palette text-3xl text-amber-600 mb-4"></i>
+                <div class="font-semibold" data-i18n="who.card3.title">Designers e artistas</div>
+                <div class="text-sm mt-2 text-amber-700" data-i18n="who.card3.desc">Conceitos visuais, ilustrações, projetos de identidade. Documente o processo criativo completo.</div>
+            </div>
+            <div class="creator-card p-7 bg-white border border-amber-100 rounded-3xl">
+                <i class="fas fa-flask text-3xl text-amber-600 mb-4"></i>
+                <div class="font-semibold" data-i18n="who.card4.title">Pesquisadores e acadêmicos</div>
+                <div class="text-sm mt-2 text-amber-700" data-i18n="who.card4.desc">Hipóteses, metodologias, dados preliminares. Fortaleça sua autoria antes da publicação formal.</div>
+            </div>
+            <div class="creator-card p-7 bg-white border border-amber-100 rounded-3xl">
+                <i class="fas fa-rocket text-3xl text-amber-600 mb-4"></i>
+                <div class="font-semibold" data-i18n="who.card5.title">Empreendedores solo</div>
+                <div class="text-sm mt-2 text-amber-700" data-i18n="who.card5.desc">MVPs, pitch decks, modelos de negócio. Tenha prova de quando tudo começou.</div>
+            </div>
+            <div class="creator-card p-7 bg-white border border-amber-100 rounded-3xl">
+                <i class="fas fa-users text-3xl text-amber-600 mb-4"></i>
+                <div class="font-semibold" data-i18n="who.card6.title">Qualquer pessoa com uma ideia</div>
+                <div class="text-sm mt-2 text-amber-700" data-i18n="who.card6.desc">Você não precisa ser expert em propriedade intelectual. Só precisa ter criado algo. Nós cuidamos do resto.</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- DIFERENCIAIS HUMANOS -->
+    <section id="diferenciais" class="bg-white py-14 border-y border-amber-200">
+        <div class="max-w-5xl mx-auto px-6">
+            <div class="text-center mb-9">
+                <div class="text-amber-700 text-xs font-bold" data-i18n="diff.eyebrow">NOSSOS DIFERENCIAIS</div>
+                <div class="warm-heading text-4xl tracking-tight" data-i18n="diff.heading">Não é só tecnologia. É respeito pelo criador.</div>
+            </div>
+            
+            <div class="grid md:grid-cols-2 gap-x-8 gap-y-8 text-sm">
+                <div>
+                    <div class="flex gap-4">
+                        <div class="text-2xl w-8 text-amber-600">🌍</div>
+                        <div>
+                            <div class="font-semibold" data-i18n="diff.item1.title">Acessível de qualquer lugar</div>
+                            <div class="text-amber-700 mt-1" data-i18n="diff.item1.desc">Funciona no celular, tablet ou computador. Sem necessidade de escritório ou advogado.</div>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <div class="flex gap-4">
+                        <div class="text-2xl w-8 text-amber-600">💰</div>
+                        <div>
+                            <div class="font-semibold" data-i18n="diff.item2.title">Preço justo e transparente</div>
+                            <div class="text-amber-700 mt-1" data-i18n="diff.item2.desc">Comece grátis. Pague só quando precisar de mais provas ou armazenamento extra.</div>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <div class="flex gap-4">
+                        <div class="text-2xl w-8 text-amber-600">🔒</div>
+                        <div>
+                            <div class="font-semibold" data-i18n="diff.item3.title">Você decide o nível de sigilo</div>
+                            <div class="text-amber-700 mt-1" data-i18n="diff.item3.desc">Do totalmente público ao criptografado com revelação futura. Total controle.</div>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <div class="flex gap-4">
+                        <div class="text-2xl w-8 text-amber-600">🛡️</div>
+                        <div>
+                            <div class="font-semibold" data-i18n="diff.item4.title">Não te abandona no futuro</div>
+                            <div class="text-amber-700 mt-1" data-i18n="diff.item4.desc">Monitoramos suas provas por você. Te avisamos se algo precisar ser renovado ou migrado.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- REDUÇÃO DE INJUSTIÇAS -->
+    <section class="max-w-4xl mx-auto px-6 py-14 text-center">
+        <div class="max-w-prose mx-auto">
+            <div class="text-amber-700 text-xs font-bold tracking-widest mb-2" data-i18n="injustice.eyebrow">REDUZINDO DESIGUALDADES</div>
+            <div class="warm-heading text-4xl tracking-tight" data-i18n="injustice.heading">A ausência de recursos não deve impedir você de provar seu trabalho.</div>
+            
+            <div class="mt-7 text-[15px] text-amber-700 leading-relaxed" data-i18n="injustice.desc">
+                Muita gente tem ideias brilhantes mas não tem dinheiro para patente, nem acesso a escritórios especializados, nem tempo para entender burocracia. 
+                Durante esse tempo, a ideia pode ser copiada ou perdida. O Certsigner fecha essa janela de vulnerabilidade com uma ferramenta simples, acessível e poderosa.
+            </div>
+        </div>
+    </section>
+
+    <!-- FINAL WARM CTA -->
+    <div class="bg-amber-900 text-white py-14">
+        <div class="max-w-md mx-auto px-6 text-center">
+            <div class="text-amber-300 text-xs tracking-[2px]" data-i18n="cta.eyebrow">SUA IDEIA MERECE SER PROTEGIDA DESDE HOJE</div>
+            <div class="mt-3 text-3xl font-semibold tracking-tight" data-i18n="cta.heading">Comece agora.<br>É simples. É humano. É seu.</div>
+            
+            <button onclick="document.getElementById('demo-warm').scrollIntoView({behavior:'smooth'})" 
+                    class="mt-8 w-full py-4 bg-white text-amber-900 font-extrabold rounded-3xl hover:bg-amber-100 transition" data-i18n="cta.button">GERAR MINHA PROVA AGORA</button>
+            
+            <div class="mt-4 text-xs text-amber-300" data-i18n="cta.subtext">Grátis para começar • Privacidade total • Monitoramento vitalício</div>
+        </div>
+    </div>
+
+    <footer class="bg-white border-t border-amber-100 py-8 text-xs text-amber-600 text-center">
+        © <span class="brand-name">Certsigner</span> • <span class="brand-domain">certsigner.com</span><br>
+        <span data-i18n="footer.tagline">Uma ferramenta feita com carinho para quem cria com o coração.</span><br>
+        <span class="text-[10px]" data-i18n="footer.smallprint">Complementa patentes, direitos autorais e registros formais. Não os substitui.</span>
+    </footer>
+</body>
+</html>
